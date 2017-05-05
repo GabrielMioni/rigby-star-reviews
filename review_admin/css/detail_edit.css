@@ -1,0 +1,100 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+
+#hud_cont #detail_form h3{
+    font-size: 25px;
+    font-weight: 400;
+}
+
+#hud_cont #detail_form {
+    margin: auto;
+    width: 80%;
+    position: relative;
+}
+
+#detail_form .left,
+#detail_form .right {
+    display: inline-block;
+    vertical-align: top;
+}
+
+#detail_form .left {
+    width: 40%;
+    left: 0px;
+}
+
+#detail_form .right {
+    left: 70px;
+    position: relative;
+    width: 50%;
+}
+
+#detail_form label,
+#detail_form .psuedo_label{
+    font-size: 20px;
+}
+
+#detail_form .row {
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+#detail_form .row .err {
+    bottom: 3px;
+    color: red;
+    display: inline-block;
+    font-size: 12px;
+    font-style: italic;
+    left: 20px;
+    position: relative;
+}
+
+#detail_form .sel_row {
+    margin-bottom: 10px;
+    width: 50%;
+    position: relative;
+}
+
+#detail_form .sel_row input,
+#detail_form .sel_row select {
+    font-size: 1.2em;
+    right: 0;
+}
+
+#detail_form .row input[type="text"] {
+    height: 30px;
+    width: 100%;
+}
+
+#detail_form textarea {
+    width: 100%;
+    height: 150px;
+}
+
+#detail_submit {
+    background-color: white;
+    border: 2px solid rgba(118, 118, 141, 0.5);
+    color: rgba(0, 0, 0, 0.7);
+    width: 100%;
+    cursor: pointer;
+    display: block;
+    font-size: 25px;
+    transition: all 0.3s ease 0s;
+    margin-top: 40px;
+}
+
+#detail_submit:hover {
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+}
+
+.right #success {
+    background-color: #2def8c;
+    color: white;
+    margin-top: 6px;
+    position: absolute;
+    text-align: center;
+    width: 100%;
+}

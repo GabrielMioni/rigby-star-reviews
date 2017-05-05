@@ -1,0 +1,401 @@
+/* 
+    Created on : Oct 14, 2016, 4:51:50 PM
+    Author     : gabriel
+*/
+#review_form {
+/*    box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5); */
+    border: 1px solid rgba(118, 118, 141, 0.5);
+    max-width: 450px;
+}
+
+#review_form, #review_widget {
+    color: rgba(0, 0, 0, 0.7);
+    font-size: 15px;
+/*    margin: 0 auto; */
+    padding: 20px;
+    width: 80%;
+}
+
+#review_widget {
+    margin-bottom: 20px;
+    margin-left: 28px;
+    padding: 0;
+    text-align: left;
+    width: 90%;
+}
+#review_widget .row {
+    line-height: 30px;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    position: relative;
+}
+#review_widget .selected {
+    font-weight: bold;
+}
+#review_widget .rev_count {
+    display: none;
+}
+.rating_title > a {
+    color: inherit;
+    text-decoration: none;
+}
+#review_widget .row .rating_title {
+    font-size: 15px;
+}
+#review_widget .row .rating_title a {
+    color: inherit;
+    text-decoration: none;
+}
+#review_widget .row .rating_title a:hover {
+    text-decoration: underline;
+}
+#review_widget .tod_display a {
+    color: inherit;
+    text-decoration: none;
+}
+#review_widget .tod_display a:hover {
+    text-decoration: underline;
+}
+
+#review_widget .row .rating_bar {
+    background-color: #ddd;
+    display: inline-block;
+    height: 15px;
+    left: 50px;
+    margin: 7.5px;
+    position: absolute;
+    width: 410px;
+}
+#review_widget .rating_tot {
+    float: right;
+}
+#review_widget .tod_display {
+    font-size: 12px;
+    text-align: right;
+}
+/*
+#review_widget .row .rating_bar .fill {
+    position: absolute;
+    height: 15px;
+    width: 10px;
+    background-color: rgb(123, 137, 166);
+}
+*/
+#review_widget .row .rating_bar .fill {
+    background-color: rgb(131, 192, 192);
+    height: 15px;
+    left: 0;
+    position: absolute;
+//    width: 90%;
+}
+
+#review_widget .clicked
+{
+    font-weight: bold;
+}
+
+#review_form.thankyou {
+    display: none;
+}
+#review_form h2 {
+/*    font-size: 30px; */
+    font-size: 15px; 
+}
+#rev_success {
+    
+}
+#ajax_success {
+    display: none;
+}
+.row label, .text_row label {
+    display: inline-block;
+    padding-right: 20px;
+    width: 30px;
+}
+.err {
+    background-color: pink;
+    bottom: 1px;
+    color: #cc0000;
+    display: inline-block;
+/*    font-size: 0.5em; */
+    font-size: 0.9em;
+    font-style: italic;
+/*    padding-left: 20px; 
+    padding-right: 20px; */
+    width: 200px;
+    position: relative;
+    text-align: center;
+    left: 20px;
+}
+.err_input {
+    border: 1px solid #cc0000;
+}
+.row, .text_row {
+    margin-bottom: 10px;
+}
+
+#review_form input[type=text] {
+    height: 30px;
+}
+#review_form input[type=text],
+#review_form textarea,
+#review_form select {
+    padding: 5px;
+    font-size: 15px;
+    border: 1px solid rgba(118, 118, 141, .5);
+}
+#review_form textarea {
+    padding: 10px;
+    resize: none;
+}
+#review_form select {
+    border-radius: 0px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+#review_form input[type=text],
+#review_form select,
+#review_form textarea,
+#review_form #submit_btn{
+    width: 450px;
+}
+.first_opt {
+    color: rgb(118, 118, 141);
+}
+
+#review_form textarea {
+/*    height: 170px; */
+    height: 100px;
+}
+
+#star_row {
+    height: 50px;
+    width: 100%;
+}
+/*
+#star_row .err {
+    bottom: 30px;
+    position: relative;
+}*/
+#star_row .err {
+    bottom: 30px;
+    left: 265px;
+    position: relative;
+}
+#star_row #star_select {
+    height: 100%;
+    width: 260px;
+    display: none;
+}
+#star_row #star_select .star{
+    display: block;
+    float: left;
+    height: 48px;
+    padding: 2px;
+    width: 48px;
+}
+#star_row > select {
+    font-size: 48px;
+    letter-spacing: 4px;
+    margin: 0;
+    padding: 0;
+}
+#star_row #star_select .star_empty {
+    background: rgba(0, 0, 0, 0) url("../stars/star_empty48.png") no-repeat scroll 0 0;
+}
+#star_row #star_select .star_full {
+    background: rgba(0, 0, 0, 0) url("../stars/star_full48.png") no-repeat scroll 0 0;
+}
+#star_vote {
+    color: rgb(239, 189, 47);
+/*    display: none; */
+}
+
+#submit_btn {
+    cursor: pointer;
+    background-color: white;
+    border: 2px solid rgba(118, 118, 141, .5);
+    font-size: 15px;
+    height: 50px;
+    transition: all .3s;
+    color: rgba(0, 0, 0, 0.7);
+}
+#submit_btn:hover {
+//    background-color: rgb(118, 118, 141);
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+}
+/*
+#right, #left {
+    height: 100%;
+}
+*/
+#right {
+    display: inline-block;
+//    position: absolute;
+    vertical-align: top;
+    right: 0;
+    width: 49%;
+    text-align: center;
+}
+#left {
+    display: inline-block;
+    left: 0;
+    vertical-align: top;
+    width: 49%;
+}
+/* Review cards */
+#review_col {
+//    height: 100%;
+    margin: 0 auto;
+/*    padding: 20px; */
+    width: 90%;
+    text-align: left;
+}
+.review_card {
+    border-bottom: 1px solid #ddd;
+    border-left: 1px solid #ddd;
+    color: rgba(0, 0, 0, 0.7);
+    margin-bottom: 10px;
+    padding: 10px;
+}
+
+.review_card .reply {
+    border-left: 5px solid rgba(150, 191, 191, 1);
+    font-style: italic;
+    padding-left: 10px;
+}
+.rating {
+//    border: 1px solid green;
+    height: 30px;
+    width: 140px;
+    position: relative;
+    display: inline-block;
+/*    position: absolute; */
+}
+.rating .star_full {
+    background: rgba(0, 0, 0, 0) url("../stars/star_full24.png") no-repeat scroll 0 0;
+    display: inline-block;
+    height: 24px;
+    width: 24px;
+}
+/*.review_name,*/
+.prod,
+.date {
+    display: inline-block;
+}
+.date {
+    padding-left: 5px;
+}
+.date_prod {
+    bottom: 5px;
+    display: inline-block;
+/*    left: 20px;
+    margin: 0;
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 0; */
+    position: relative;
+/*    width: 65%; */
+}
+.date_prod p, .review_title p {
+    margin: 0;
+//    padding-left: 20px;
+    padding-top: 3px;
+}
+.review_title {
+    bottom: 5px;
+/*    display: inline-block; */
+    position: relative;
+}
+/* pagination bar*/
+
+#pagination_bar {
+    min-width: 525px;
+}
+#pagination_bar ul {
+    display: inline-block;
+    position: relative;
+    margin: 0;
+    padding: 0;
+//    text-align: center;
+//    min-width: 505px;
+}
+#pagination_bar .hidden {
+    display: none;
+}
+
+#pagination_bar ul li {
+    border: 1px solid rgba(118, 118, 141, .5);
+    display: inline-block;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    min-width: 30px;
+    margin-left: 2px;
+    margin-right: 2px;
+    vertical-align: top;
+}
+
+#pagination_bar ul li a {
+//    color: black;
+    color: rgba(0, 0, 0, 0.7);
+    display: inline-block;
+    height: 100%;
+    text-decoration: none;
+    width: 100%;
+    transition: all .2s;
+    vertical-align: top;
+}
+
+.fa-angle-left, .fa-angle-right, .fa-angle-double-left, .fa-angle-double-right {
+    position: relative;
+    vertical-align: top;
+    top: 7.5px;
+}
+#pagination_bar ul li a:hover {
+    background-color: rgba(0, 0, 0, 0.3);
+    color: white;
+}
+
+#pagination_bar ul li.selected {
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+}
+
+#pagination_bar .page_view_count {
+    color: rgba(0, 0, 0, 0.7);
+    font-size: 12px;
+    padding-right: 5px;
+    text-align: right;
+}
+.ten_nav {
+    display: inline-block;
+}
+.ten_dir {
+    border: 1px solid black;
+    border-radius: 180px;
+    display: inline-block;
+    height: 25px;
+    margin-top: 10px;
+    text-align: center;
+    width: 25px;
+}
+.ten_dir .ten_center {
+    border: 1px solid red;
+    text-align: center;
+    vertical-align: middle;
+
+}
+.nav_faded {
+    opacity:.5;
+}
+/*
+.ten_dir {
+    display: inline-block;
+    text-align: center;
+    width: 30px;
+}
+*/

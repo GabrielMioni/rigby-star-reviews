@@ -1,0 +1,34 @@
+#review_admin, #review_search {
+    border-collapse: collapse;
+    margin: 15px;
+    width: 95%;
+    position: relative;
+}
+
+#review_admin tbody .tr_white {
+    background-color: white;
+}
+#review_admin th {
+    text-align: left;
+    padding: 10px;
+}
+#review_admin tr.head {
+    border-bottom: 1px solid rgb(185, 215, 229);
+    background-color: lightblue;
+}
+
+#review_admin #col_title {
+    width: 200px;
+}
+#review_admin #col_name {
+    width: 120px;
+}
+#review_admin #col_email {
+    width: 120px;
+}
+#review_admin #col_stars {
+    width: 150px;
+}
+#review_admin tbody tr td {
+    padding: 10px;
+}

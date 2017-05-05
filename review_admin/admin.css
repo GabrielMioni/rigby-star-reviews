@@ -1,0 +1,415 @@
+body {
+    background-color: rgb(69, 71, 80);
+    margin: 0;
+    padding: 0;
+}
+#hud #hud_cont, #hud #hud_title {
+    color: rgb(69, 71, 80);
+}
+#edit_toolbar, #edit_wrap {
+    font-family: "Oswald",sans-serif;
+}
+#edit_toolbar {
+    height: 40px;
+    position: relative;
+    width: 100%;
+}
+#edit_toolbar, #edit_sidebar, #login_user #user_opts {
+    background-color: rgb(69, 71, 80);
+    color: white;
+}
+#edit_wrap {
+    position: relative;
+    width: 100%;
+}
+#edit_toolbar, #edit_sidebar, #login_user #user_opts {
+    background-color: rgb(69, 71, 80);
+    color: rgb(241, 241, 241);
+}
+#edit_sidebar #login_user {
+    background-color: rgba(47, 51, 62, 1);
+}
+#edit_toolbar #login_user a {
+    color: inherit;
+    display: table;
+    height: 100%;
+    text-decoration: none;
+    width: 100%;
+}
+#edit_toolbar #login_user {
+    display: inline-block;
+    float: right;
+    height: 100%;
+    min-width: 130px;
+    right: 0;
+}
+#edit_toolbar #login_user span {
+    display: table-cell;
+    height: 100%;
+    text-align: center;
+    vertical-align: middle;
+}
+#edit_toolbar #login_user a {
+    background-color: rgba(47, 51, 62, 1);
+}
+#edit_toolbar #login_user .row a:hover {
+    color: #EAA426; /* orange */
+}
+#edit_toolbar #login_user a:hover + #user_opts {
+    display: block;
+}
+#edit_toolbar #login_user span {
+    display: table-cell;
+    height: 100%;
+    line-height: 100%;
+    vertical-align: middle;
+}
+#login_user {
+    background-color: rgba(47, 51, 62, 1);
+}
+#login_user #user_opts {
+    background-color: rgba(47, 51, 62, 1);
+    bottom: -200px;
+    box-sizing: border-box;
+    display: none;
+    height: 200px;
+    padding: 10px;
+    position: absolute;
+    right: 0;
+    width: 200px;
+    z-index: 3;
+}
+#login_user #user_opts:hover {
+    display: block;
+}
+#login_user #user_opts .row {
+    height: 20px;
+    position: relative;
+    width: 100%;
+}
+#edit_wrap #edit_sidebar {
+    display: inline-block;
+    font-size: 18px;
+    margin: 0;
+    min-width: 10%;
+    padding: 0;
+    text-align: left;
+}
+#edit_sidebar ul {
+    list-style: outside none none;
+    margin: 10px 0 0;
+    padding: 0;
+}
+#edit_sidebar li {
+    height: 28px;
+    margin-bottom: 10px;
+    position: relative;
+}
+#edit_sidebar li a {
+    color: inherit;
+    display: block;
+    left: 0;
+    position: relative;
+    text-decoration: none;
+    top: 0;
+    width: 100%;
+}
+.arrow-left {
+    border-bottom: 12px solid transparent;
+    border-right: 10px solid rgb(241, 241, 241);
+    border-top: 12px solid transparent;
+    bottom: 2px;
+    height: 0;
+    position: absolute;
+    right: 0;
+    width: 0;
+}
+#edit_sidebar li a:hover, #login_user:hover {
+    background-color: rgb(47, 51, 62);
+    color: rgb(80, 143, 182);
+}
+#edit_sidebar li.selected {
+    background-color: orange;
+}
+#edit_sidebar a span {
+    padding-left: 20px;
+}
+#hud, #edit_sidebar {
+}
+#hud {
+    background-color: rgb(241, 241, 241);
+    box-sizing: border-box;
+    display: inline-block;
+    min-height: 650px;
+    padding: 10px;
+    position: absolute;
+    width: 89.9%;
+}
+#hud_title h3 {
+    font-size: 30px;
+    font-weight: 400;
+    margin: 0;
+}
+#hud #hud_cont {
+    height: 93%;
+}
+#hud #hud_cont #left, #hud #hud_cont #right {
+    height: 100%;
+    vertical-align: top;
+    width: 49%;
+}
+#hud #hud_cont #left {
+    float: left;
+}
+#hud #hud_cont #right {
+    float: right;
+}
+#hud #hud_cont .box {
+    background-color: #fff;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+    margin-bottom: 20px;
+    position: relative;
+}
+#hud #hud_cont .box > h3 {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+    font-size: 15px;
+    font-weight: 400;
+    margin: 0;
+    padding: 10px;
+}
+#hud #hud_cont .box .box_toggle {
+    cursor: pointer;
+    height: 42px;
+    position: absolute;
+    right: 0;
+    text-align: center;
+    top: 0;
+    width: 42px;
+}
+#hud #hud_cont .box .toggle_up, .toggle_down {
+    font-family: FontAwesome;
+    padding-top: 15px;
+}
+#hud #hud_cont .box .toggle_up::after {
+    content: "";
+}
+#hud #hud_cont .box .toggle_down::after {
+    content: "";
+}
+#hud #hud_cont .box .box_cont {
+    display: block;
+}
+#hud #hud_cont .box .box_cont .row {
+    font-size: 15px;
+    height: 20px;
+    padding-bottom: 5px;
+    padding-left: 10px;
+    padding-top: 5px;
+}
+#hud #hud_cont .box .box_cont .row .row_var {
+    display: inline-block;
+    float: right;
+    left: 100px;
+    position: relative;
+    width: 55%;
+}
+#hud #hud_cont .box .box_cont .bar_graph {
+    height: 320px;
+    margin: 5px;
+}
+.bar_graph .bottoom_bar {
+    left: 16%;
+//    margin: 0 auto;
+    position: relative;
+    text-align: center;
+    width: 455px;
+}
+.bar_graph .bottoom_bar .week_wrapper {
+    display: inline-block;
+    margin: 0 auto;
+    padding: 0;
+    position: relative;
+}
+.bar_graph .bottoom_bar .week_wrapper .days {
+    display: inline-block;
+    height: 280px;
+    position: relative;
+    text-align: left;
+    width: 65px;
+}
+.bar_graph .bottoom_bar .week_wrapper .days .date {
+    width: 100%;
+}
+.bar_graph .bottoom_bar .week_wrapper .days .count_bar {
+    bottom: 0;
+    height: 231px;
+    left: 0;
+    margin: 0 auto;
+    position: absolute;
+    text-align: center;
+    width: 55%;
+}
+.fill_wrap {
+    height: 100%;
+}
+.bar_graph .bottoom_bar .week_wrapper .days .count_bar .fill_wrap .fill {
+    background-color: rgb(185, 215, 229);
+    bottom: 0;
+    display: inline-block;
+    left: 0;
+    position: absolute;
+    vertical-align: middle;
+    width: 100%;
+}
+.count_label {
+    bottom: 0;
+    height: 245px;
+    left: -30px;
+    position: absolute;
+    text-align: left;
+    width: 100%;
+    z-index: 100;
+}
+.count_line {
+    background-color: rgb(185, 215, 229);
+    bottom: 12px;
+    height: 1px;
+    left: 30px;
+    position: relative;
+    width: 427px;
+}
+.line {
+    height: 46px;
+}
+
+/* Recent Reviews Table */
+
+#table_wrap {
+    padding: 5px;
+}
+
+table#new_reviews {
+    padding: 5px;
+    width: 100%;
+    table-layout: fixed;
+    font-size: 15px;
+    border-collapse: collapse
+}
+#new_reviews td {
+    vertical-align: top;
+}
+#new_reviews tbody tr:nth-child(odd) {
+    background-color: rgb(241, 241, 241);
+}
+
+table#new_reviews thead #email_col {
+    max-width: 155px;
+}
+table#new_reviews thead #rating_col {
+    width: 135px;
+}
+table#new_reviews thead #content_col {
+    width: 220px;
+}
+#new_reviews thead th {
+    text-align: left;
+    font-weight: 400;
+    font-size: 15px;
+}
+
+#new_reviews .content {
+//    max-width: 100px;
+//    overflow: hidden;
+//    text-overflow: ellipsis;
+//    white-space: nowrap;
+//    transition: 5s;
+    /*
+    -webkit-transition-delay: 0s 200s; /* Safari */
+/*    transition-delay: 0s 200s; */
+}
+#new_reviews .email {
+//    max-width: 155px;
+    overflow: hidden;
+}
+
+#new_reviews .content .tooltiptext {
+    background-color: beige;
+    border: 1px dashed lightblue;
+    border-radius: 6px;
+    visibility: hidden;
+    left: -35px;
+    max-width: 400px;
+    padding: 10px;
+    position: absolute;
+    white-space: normal;
+    width: 500px;
+    z-index: 1;
+}
+
+#new_reviews .content:hover .tooltiptext {
+    visibility: visible;
+}
+
+/* New activity */
+
+.activity .review_wrap:nth-child(odd) {
+    background-color: rgb(241, 241, 241);
+}
+.activity .review_wrap {
+    padding: 10px 20px;
+}
+.content_col {
+    border-bottom: 1px solid rgb(185, 215, 229);
+    border-top: 1px solid rgb(185, 215, 229);
+    padding-bottom: 15px;
+    padding-top: 10px;
+}
+.activity {
+    max-height: 490px;
+    padding: 10px;
+    overflow: scroll;
+}
+.review_wrap .star_col, .review_wrap .email_col, .review_wrap .date_col {
+    display: inline-block;
+    padding-right: 20px;
+}
+.review_wrap .star_col {
+    width: 140px;
+}
+.review_wrap .email_col {
+    width: 200px;
+}
+
+.review_wrap .star_full,
+.review_header .star_full{
+    background: rgba(0, 0, 0, 0) url("../stars/star_full24.png") no-repeat scroll 0 0;
+    display: inline-block;
+    height: 24px;
+    width: 24px;
+}
+.review_wrap .rev_email {
+    display: inline-block;
+}
+
+.go.left, .go.right {
+    height: 320px;
+    position: absolute;
+    text-align: center;
+    width: 65px;
+    opacity: .2;
+    transition: .5s;
+    cursor: pointer;
+}
+.go.left:hover, .go.right:hover {
+    opacity: .8;
+}
+.go.left {
+    left: 0;
+}
+.go.right {
+    right: 0;
+}
+.icon {
+    position: relative;
+    top: 45%;
+}
