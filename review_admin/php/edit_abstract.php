@@ -1,6 +1,6 @@
 <?php
 
-require_once('../../config.php');
+// require_once('../../config.php');
 
 require_once(RIGBY_ROOT . '/php/sql_pdo/sql_define.php');
 require_once(RIGBY_ROOT . '/php/sql_pdo/sql_pdo.php');

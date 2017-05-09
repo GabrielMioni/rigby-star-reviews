@@ -1,6 +1,7 @@
 <?php
 
-require_once('../../review_login/define.php');
+//require_once('../../review_login/define.php');
+require_once(RIGBY_ROOT . '/review_login/define.php');
 require_once('edit_abstract.php');
 
 /**
