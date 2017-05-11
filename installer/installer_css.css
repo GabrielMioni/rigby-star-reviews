@@ -1,0 +1,111 @@
+html, body {
+    margin: 0;
+    padding: 0;
+}
+#rigby_installer {
+    position: absolute;
+    top: 20%;
+    width: 100%;
+}
+.rigby_message {
+    background-color: #fafafa;
+    border-bottom: 1px solid #bdbdbd;
+    border-right: 1px solid #bdbdbd;
+    border-top: 1px solid #bdbdbd;
+    font-family: "PT Sans",sans-serif;
+    margin: 0 auto;
+    padding: 30px;
+    width: 30%;
+}
+
+.good {
+    border-left: 5px solid #448AFF;
+}
+.bad {
+    border-left: 5px solid red;
+}
+
+.rigby_message h3 {
+    margin: 0;
+}
+
+form {
+    /*    background-color: white; */
+}
+
+.rigby_message button {
+    background-color: #448aff;
+    border: 1px solid #448aff;
+    color: #ffffff;
+    cursor: pointer;
+    font-family: pt sans;
+    font-size: 25px;
+    padding: 5px;
+    text-align: center;
+    transition: all 0.2s ease 0s;
+    width: 100%;
+}
+
+.rigby_message button:hover {
+    background-color: rgba(95, 137, 252, .8);
+    border: 1px solid rgba(95, 137, 252, .8);
+}
+
+.rigby_message .top_p {
+    margin-top: 0px;
+}
+
+table {
+    font-family: "PT Sans",sans-serif;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    width: 100%;
+}
+caption {
+    font-style: oblique;
+    text-align: left;
+}
+tbody {
+
+}
+th, td {
+    padding: 20px 0 0;
+}
+th {
+    font-weight: normal;
+    text-align: left;
+}
+td {
+    text-align: right;
+}
+
+td.true_td {
+    color: lime;
+}
+td.false_td {
+    color: red;
+}
+
+.form_row {
+    font-size: 2em;
+    margin-bottom: 10px;
+    overflow: hidden;
+}
+
+label {
+    float: left;
+    font-size: 20px;
+}
+
+input[type="text"],
+input[type="password"] {
+    float: right;
+    font-size: 15px;
+    line-height: 15px;
+    padding: 5px;
+    width: 75%;
+}
+
+.error {
+    color: red;
+}
