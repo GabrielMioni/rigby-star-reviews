@@ -63,7 +63,7 @@ trait check_admin {
      * @return bool
      */
     protected function chck_admin_priv($username) {
-        $query = "SELECT admin from users2 WHERE username=?;";
+        $query = "SELECT admin from users WHERE username=?;";
         $result = sql_pdo::run($query, [$username])->fetchColumn();
         switch ($result) {
             case 1:

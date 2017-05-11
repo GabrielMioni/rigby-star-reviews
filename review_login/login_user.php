@@ -1,6 +1,6 @@
 <?php
 
-require_once('../config.php');
+// require_once('../config.php');
 
 require_once(RIGBY_ROOT . '/php/sql_pdo/sql_define.php');
 require_once(RIGBY_ROOT . '/php/sql_pdo/sql_pdo.php');
@@ -10,7 +10,7 @@ require_once(RIGBY_ROOT . '/php/sql_pdo/sql_pdo.php');
  */
 
 /**
- * Collects the password hash stored for a given $username stored on users2.sql and compares it to the
+ * Collects the password hash stored for a given $username stored on users.sql and compares it to the
  * $password provided by the Rigby user.
  *
  * The result of the validation is returned by login_user::return_pswd_chk();
@@ -57,14 +57,14 @@ class login_user
     }
 
     /**
-     * Try to get the password hash stored on users2.sql for the $username provided.
+     * Try to get the password hash stored on users.sql for the $username provided.
      *
      * @param $username string Username provided by the Rigby user.
      * @return bool|string
      */
     protected function get_db_hash($username)
     {
-        $query = "SELECT hash from users2 WHERE username = ? LIMIT 1";
+        $query = "SELECT hash from users WHERE username = ? LIMIT 1";
         try {
             $result = sql_pdo::run($query, [$username])->fetchColumn();
         } catch (Exception $exc) {

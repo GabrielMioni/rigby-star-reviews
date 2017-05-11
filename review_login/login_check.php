@@ -98,7 +98,7 @@ class login_check
     }
 
     /**
-     * Checks a cookie token and compares it to the token stored in users2.sql.
+     * Checks a cookie token and compares it to the token stored in users.sql.
      *
      * Called in login_check::start_login_check()
      *
@@ -172,7 +172,7 @@ class login_check
         
         try
         {
-            $row = sql_pdo::run("SELECT * FROM users2 WHERE username=? LIMIT 1", [$username])->fetch();
+            $row = sql_pdo::run("SELECT * FROM users WHERE username=? LIMIT 1", [$username])->fetch();
         } catch (Exception $e) {
             $row = null;
         }

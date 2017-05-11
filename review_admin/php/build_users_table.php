@@ -34,7 +34,7 @@ class build_users_table {
      * @return array|bool
      */
     protected function get_users_data() {
-        $query = "SELECT * FROM users2 ORDER BY admin desc, username";
+        $query = "SELECT * FROM users ORDER BY admin desc, username";
 
         try {
             $users = sql_pdo::run($query)->fetchAll();

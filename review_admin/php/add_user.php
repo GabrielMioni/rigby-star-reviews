@@ -35,10 +35,18 @@ class add_user extends edit_abstract
      */
     protected $ajax_reply = NULL;
 
-    public function __construct()
+    public function __construct($installer_admin = null)
     {
-
         parent::__construct();
+
+        /**
+         * Bypass admin check if class is being called by the installer.
+         */
+        if ($installer_admin == true)
+        {
+            unset($this->problems['login_error']);
+            unset($this->problems['admin_creds']);
+        }
 
         $new_name           = isset($_POST['new_name'])  ? $this->validate_input($_POST['new_name'],  30, 'name',                0)                        : '';
         $email              = isset($_POST['new_email']) ? $this->validate_input($_POST['new_email'], 50, 'email',               0, FILTER_VALIDATE_EMAIL) : '';
@@ -80,6 +88,9 @@ class add_user extends edit_abstract
         }
         if (!empty($results)) {
             $this->problems['name'] = 'Username already exists.';
+        }
+        if (trim($user_name) == '') {
+            $this->problems['name'] = 'Username cannot be blank';
         }
     }
 

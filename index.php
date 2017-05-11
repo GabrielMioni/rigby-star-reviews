@@ -2,7 +2,6 @@
 session_set_cookie_params(0);
 session_start();
 require_once('config.php');
-require_once('../../scripts/php/header.php');
 require_once('php/product_array.php');
 require_once('php/build_review_form.php');
 

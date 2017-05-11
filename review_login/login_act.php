@@ -153,7 +153,7 @@ class login_act
     {
 
         // Check if the $username exists in users2.sql.
-        $chk_name = sql_pdo::run("SELECT username FROM users2 WHERE username=? LIMIT 1", [$username])->fetchColumn();
+        $chk_name = sql_pdo::run("SELECT username FROM users WHERE username=? LIMIT 1", [$username])->fetchColumn();
 
         // If the $username exists, check the $username and $password credentials by calling the class login_user.
         if (!empty($chk_name)) {
