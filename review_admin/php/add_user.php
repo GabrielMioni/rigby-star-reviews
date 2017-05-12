@@ -59,7 +59,7 @@ class add_user extends edit_abstract
         $this->pdo_array['hash']  = password_hash($password_set, PASSWORD_DEFAULT);
         $this->pdo_array['admin'] = $admin;
 
-        $query = "INSERT INTO users2 (username, email, hash, admin, reg_date) VALUES (?,?,?,?, NOW());";
+        $query = "INSERT INTO users (username, email, hash, admin, reg_date) VALUES (?,?,?,?, NOW());";
 
         $this->check_existing_users($this->pdo_array['name']);
         $this->compare_pswd($password_set, $password_confirm);
@@ -78,7 +78,7 @@ class add_user extends edit_abstract
      */
     protected function check_existing_users($user_name)
     {
-        $query = "SELECT * FROM users2 WHERE username = ?";
+        $query = "SELECT * FROM users WHERE username = ?";
         
         try {
             $results = sql_pdo::run($query, [$user_name])->fetchAll();

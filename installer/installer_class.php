@@ -1,5 +1,6 @@
 <?php
 require_once('../php/sql_pdo/sql_pdo.php');
+require_once('../php/sql_pdo/sql_define.php');
 require_once('../config.php');
 
 /**
@@ -32,7 +33,6 @@ require_once('../config.php');
  * after processing HTML.
  *
  */
-namespace Rigby;
 
 class installer {
     protected $pdo_obj;
@@ -355,7 +355,7 @@ class installer {
             header('Location: ' . $server);
             exit;
         } else {
-            require_once('test_define.php');
+//            require_once('test_define.php');
 
             $sql_table_review = $this->create_review_table();
             $sql_table_users = $this->create_users_table();
@@ -522,13 +522,14 @@ class installer {
 
     protected function create_review_table()
     {
-        $query = 'CREATE TABLE reviews (
+        $query = 'CREATE TABLE star_reviews (
                     id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
                     title VARCHAR(60) NOT NULL,
                     name VARCHAR(30) NOT NULL,
                     email VARCHAR(50) NOT NULL,
                     cont VARCHAR(1000) NOT NULL,
                     ip VARCHAR(32) NOT NULL,
+                    product VARCHAR (10),
                     hidden int(1) DEFAULT NULL,
                     date timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
                     stars tinyint(1),
@@ -689,7 +690,7 @@ class installer {
 
             $_SESSION['set_action'] = 5;
             $_SESSION['pseudo_ajax_reply'] = 1;
-            header('Location: ' . $server);
+//            header('Location: ' . $server);
             exit;
         }
 

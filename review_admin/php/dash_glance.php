@@ -126,15 +126,18 @@ class dash_glance extends dash_abstract {
      * @param $count_total
      * @return integer|float
      */
-    protected function get_average($count_total) {
+    protected function get_average($count_total)
+    {
         $query = "SELECT SUM(stars) FROM star_reviews;";
         $sum = $this->process_query_column($query, []);
 
-        if($sum !== FALSE || $sum !== 0) {
-            $avg = $sum / $count_total;
-        } else {
+        if ($sum == 0)
+        {
             $avg = 0;
+        } else {
+            $avg = $sum / $count_total;
         }
+
         return number_format((float)$avg, 2, '.', '');
     }
     /*

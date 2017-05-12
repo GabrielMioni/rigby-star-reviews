@@ -2,8 +2,7 @@
 
 session_start();
 
-$build_header = new page_header2();
-$header = $build_header->return_header();
+
 
 $current_year = date('Y', time());
 
