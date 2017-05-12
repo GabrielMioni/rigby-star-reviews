@@ -50,7 +50,6 @@ function ajax_edit() {
             url: form_action,
             data: submit_data
         }).done(function(response) {
-            console.log(response);
             switch(response)  {
                 case '1':
                     add_user_success();
@@ -157,8 +156,7 @@ function remove_error_message() {
 
         var input = $(this); // Current input element.
 
-        var non_chars = [9, 27];
-        console.log(e.keyCode);
+//        var non_chars = [9, 27];
 
         // Find the .error element for the form input.
         var error_msg = input.prev('.error');
