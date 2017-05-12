@@ -491,7 +491,7 @@ class installer {
         define('DB_CHAR', 'utf8');        
         ?>";
 
-        return $this->try_to_write('test_define.php', $define_text);
+        return $this->try_to_write('../php/sql_pdo/sql_define.php', $define_text);
     }
 
     protected function try_to_write_secret_key()
@@ -501,7 +501,7 @@ class installer {
         $secret_key_text = "<?php
         define(\"SECRET_KEY\", \"$random_key\");";
 
-        return $this->try_to_write('../review_login/define_test.php', $secret_key_text);
+        return $this->try_to_write('../review_login/define.php', $secret_key_text);
     }
 
     protected function try_to_write($file, $text, $allow_write = false)
@@ -522,7 +522,7 @@ class installer {
 
     protected function create_review_table()
     {
-        $query = 'CREATE TABLE reviews_test (
+        $query = 'CREATE TABLE reviews (
                     id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
                     title VARCHAR(60) NOT NULL,
                     name VARCHAR(30) NOT NULL,
@@ -539,7 +539,7 @@ class installer {
 
     protected function create_users_table()
     {
-        $query = 'CREATE TABLE users_test (
+        $query = 'CREATE TABLE users (
                     id INT(3) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
                     username VARCHAR(30) NOT NULL,
                     email VARCHAR(50) NOT NULL,
