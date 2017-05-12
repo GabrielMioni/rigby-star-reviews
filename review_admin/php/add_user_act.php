@@ -1,4 +1,7 @@
 <?php
+if (!defined(RIGBY_ROOT)) {
+    require_once('../../config.php');
+}
 require_once('add_user.php');
 
 session_start();
