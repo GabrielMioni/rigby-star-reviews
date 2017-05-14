@@ -1,6 +1,5 @@
 <?php
 
-//require_once('../../review_login/define.php');
 require_once(RIGBY_ROOT . '/review_login/define.php');
 require_once('edit_abstract.php');
 
@@ -22,7 +21,6 @@ require_once('edit_abstract.php');
  * -add_user_act.php
  *
  */
-//class add_user extends abst_check_validate{
 class add_user extends edit_abstract
 {
     /**
@@ -126,22 +124,6 @@ class add_user extends edit_abstract
 
         $this->ajax_reply = json_encode($problems, TRUE);
     }
-
-/*
-    protected function set_error_messages(array $problems) {
-
-        // Initialize array to hold $keys from $problems array.
-        $ajax_errors = array();
-
-        // Populate $ajax_errors with $problems keys.
-        foreach ($problems as $key => $problem) {
-            $ajax_errors[] = $key;
-        }
-        // Set edit_quick::$ajax_reply with JSON encoded string from $ajax_errors.
-        $json_errors = json_encode($ajax_errors);
-        $this->ajax_reply = $json_errors;
-    }
-*/
 
     /**
      * Public access for add_user.php::$ajax_reply
