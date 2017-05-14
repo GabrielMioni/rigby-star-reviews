@@ -180,15 +180,21 @@ class admin_bars {
             default:
                 break;
         }
-        $sidebar = "    <div id='edit_sidebar'>
-                            <ul>
-                                <li$sel_index><a href='index.php'><span>Dashboard</span></a>$arrow_index</li>";
-        if ($admin_priv == TRUE) {
+
+        // Start sidebar HTML
+        $sidebar  = "<div id='edit_sidebar'><ul>";
+        // Add Dashboard and Reviews options
+        $sidebar .= "<li$sel_index><a href='index.php'><span>Dashboard</span></a>$arrow_index</li>"; // Add Dashboard
+        $sidebar .= "<li$sel_reviews><a href='reviews.php'><span>Reviews</span></a>$arrow_reviews</li>";
+
+        // If the Rigby user is admin, add Users and Settings options.
+        if ($admin_priv == TRUE)
+        {
             $sidebar .= "<li$sel_users><a href='users.php'><span>Users</span></a>$arrow_users</li>";
+            $sidebar .= "<li$sel_settings><a href='settings.php'><span>Settings</span></a>$arrow_settings</li>";
         }
-        $sidebar .=            "<li$sel_reviews><a href='reviews.php'><span>Reviews</span></a>$arrow_reviews</li>
-                            </ul>
-                        </div>";
+
+        $sidebar .= "</ul></div>"; // Close sidebar.
         return $sidebar;
     }
 
