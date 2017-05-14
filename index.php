@@ -5,8 +5,10 @@ require_once('config.php');
 require_once('php/product_array.php');
 require_once('php/build_review_form.php');
 
+/*
 $build_header = new page_header2('projects.php');
 $header = $build_header->return_header();
+*/
 
 $build_review_form = new build_review_form($product_array);
 $review_form = $build_review_form->return_review_form();
@@ -26,12 +28,13 @@ $current_year = date('Y', time());
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     </head>
     <body>
-        <?php echo $header; ?>        
+    <!--
         <div id='sub_bar'>
             <div class='name'>
                 Gabriel Mioni | <span class="purpose">Star Reviews</span>
             </div>            
         </div>
+        -->
         <div id='content'>
             <div id='left'>
                 <?php echo $review_form; ?>
