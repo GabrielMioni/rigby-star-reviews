@@ -1,7 +1,7 @@
 <?php
 require_once('../php/sql_pdo/sql_pdo.php');
 require_once('../php/sql_pdo/sql_define.php');
-require_once('../config.php');
+require_once('../rigby_root.php');
 
 /**
  *

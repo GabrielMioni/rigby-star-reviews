@@ -1,5 +1,5 @@
 <?php
-require_once('../config.php');
+require_once('../rigby_root.php');
 require_once('sidebar.php');
 require_once('product_array.php');
 

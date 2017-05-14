@@ -6,7 +6,7 @@ error_reporting(-1);
 session_start();
 
 if (!defined('RIGBY_ROOT')) {
-    include_once('../../config.php');
+    include_once('../../rigby_root.php');
 }
 
 require_once(RIGBY_ROOT . '/php/sql_pdo/sql_define.php');

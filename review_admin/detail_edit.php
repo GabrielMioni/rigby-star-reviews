@@ -19,7 +19,7 @@
  * Define RIGBY_ROOT
  * - Any classes calling the sql_pdo class will fail without RIGBY_ROOT
  * ********************************************************************/
-require_once('../config.php');
+require_once('../rigby_root.php');
 
 require_once(RIGBY_ROOT . '/review_login/login_check.php');
 require_once('php/admin_bars.php');

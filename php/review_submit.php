@@ -4,7 +4,7 @@ session_start();
 require_once('sql_pdo/sql_define.php');
 require_once('sql_pdo/sql_pdo.php');
 require_once('review_insert.php');
-require_once('../config.php');
+require_once('../rigby_root.php');
 
 /**
  * @package     Rigby
