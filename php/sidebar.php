@@ -52,7 +52,6 @@ class sidebar extends review_navigate_abstract {
         }
 
         return $review_cards;
-//        return $review_cards;
     }
 
     protected function review_card_formatter(array $review) {
