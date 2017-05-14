@@ -531,11 +531,13 @@ class installer {
                     ip VARCHAR(32) NOT NULL,
                     product VARCHAR (10),
                     hidden int(1) DEFAULT NULL,
+                    fake tinyint(1) DEFAULT NULL,
                     date timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
                     stars tinyint(1),
                     reply VARCHAR(1000) DEFAULT NULL)';
 
-        return $this->create_table($query);
+        $create = $this->create_table($query);
+        return $create;
     }
 
     protected function create_users_table()
@@ -551,7 +553,8 @@ class installer {
                     admin tinyint(1) DEFAULT NULL,
                     locked tinyint(1) NOT NULL DEFAULT 0)';
 
-        return $this->create_table($query);
+        $create = $this->create_table($query);
+        return $create;
     }
 
     protected function create_table($query) {
