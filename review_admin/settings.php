@@ -121,15 +121,17 @@ echo $toolbar;
                                 <label for="date_end">Date End:</label>
                                 <input name="date_end"  type="text" value="">
                             </div>
-                            <?php echo $fake_review_msg; ?>
+                            <?php
+                                echo $fake_review_msg;
+                                if(isset($_SESSION['fake_reviews_msg']))
+                                {
+                                    unset($_SESSION['fake_reviews_msg']);
+                                }
+                            ?>
                             <input type="submit" value="Create Fake Reviews">
                         </form>
                     </div>
                 </div>
-                <?php
-                echo $pagination_bar;
-                echo $review_table;
-                ?>
             </div>
         </div>
 

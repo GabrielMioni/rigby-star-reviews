@@ -157,7 +157,7 @@ class build_fake_reviews {
     protected function insert_fake_reviews(array $fake_reviews)
     {
         try {
-            $stmt = sql_pdo::prepare("INSERT INTO star_reviews (title, date, stars, name, email, ip, cont, hidden) VALUES (?, ?, ?, ?, ?, ?, ?,0)");
+            $stmt = sql_pdo::prepare("INSERT INTO star_reviews (title, date, stars, name, email, ip, cont, hidden, fake) VALUES (?, ?, ?, ?, ?, ?, ?,0, 1)");
             foreach ($fake_reviews as $review)
             {
                 $pdo_array = array();
