@@ -87,6 +87,11 @@ if (isset($_SESSION['fake_reviews_msg']))
             border: 1px solid #03a9f4;
         }
 
+        #search_form > #fake_review_msg {
+            min-height: 25px;
+        }
+
+
 
 
     </style>
@@ -108,7 +113,7 @@ echo $toolbar;
                         <div class="tog toggle_up"></div>
                     </div>
                     <div id='fake_review_console' class="box_cont">
-                        <form id='search_form' action="php/build_fake_reviews.php" method="post">
+                        <form id='search_form' action="php/fake_reviews_create.php" method="post">
                             <div class='row'>
                                 <label for='fake_review_count'># of reviews to create:</label>
                                 <input name="fake_review_count" type="text" value="">
@@ -121,13 +126,15 @@ echo $toolbar;
                                 <label for="date_end">Date End:</label>
                                 <input name="date_end"  type="text" value="">
                             </div>
-                            <?php
+                            <div id="fake_review_msg">
+                                <?php
                                 echo $fake_review_msg;
                                 if(isset($_SESSION['fake_reviews_msg']))
                                 {
                                     unset($_SESSION['fake_reviews_msg']);
                                 }
-                            ?>
+                                ?>
+                            </div>
                             <input type="submit" value="Create Fake Reviews">
                         </form>
                     </div>
