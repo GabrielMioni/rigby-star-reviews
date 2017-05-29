@@ -1,0 +1,208 @@
+/* ****************************
+ * Search Form
+ * ****************************/
+
+#product_search > #search_form {
+    max-width: 639px;
+    padding: 10px;
+}
+.product_name_search, .product_id_search {
+    display: inline-block;
+    width: 315px;
+}
+.product_name_search > label.product_label, .product_id_search > label.product_label {
+    display: block;
+}
+.product_name_search input, .product_id_search input {
+    min-width: 100%;
+}
+#product_search div {
+    /*margin-bottom: 5px;
+    margin-right: 5px;*/
+}
+.date_select_wrapper {
+    display: inline-block;
+    min-width: 315px;
+    margin-right: 5px;
+}
+
+.product_date_start, .product_date_end {
+    display: inline-block;
+    width: 155px;
+}
+
+/* Container for date select radio buttons */
+.date_rad {
+    display: inline-block;
+}
+.date_rad > input[type="radio"] {
+    margin-top: -1px;
+    vertical-align: middle;
+}
+.product_date_start > input,
+.product_date_end > input {
+    min-width: 100%;
+}
+.product_date_set {
+    display: none;
+    padding-top: 5px;
+}
+.product_date_set > input {
+    min-width: 100%;
+}
+.star_row {
+    display: inline-block;
+    width: 315px;
+}
+#search_form button {
+    background-color: #4fc3f7;
+    border: 1px solid #4fc3f7;
+    color: white;
+    cursor: pointer;
+    font-size: 20px;
+    margin-top: 10px;
+    min-width: 100%;
+    padding: 2px;
+}
+#search_form button:hover {
+    background-color: #03a9f4;
+    border: 1px solid #03a9f4;
+}
+
+#product_form {
+    margin-top: 20px;
+}
+
+#product_form table {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+}
+
+#product_form input[type="submit"] {
+    background: red none repeat scroll 0 0;
+    border: 1px solid red;
+    color: white;
+    cursor: pointer;
+    font-size: 20px;
+    padding: 2px;
+    width: 300px;
+}
+
+#product_form input[type="text"] {
+    font-family: "Oswald",sans-serif;
+    font-size: 16px;
+    left: -4px;
+    margin: 0;
+    max-height: 25px;
+    position: absolute;
+    top: 20px;
+}
+
+#review_admin, #review_search, #product_table {
+    border-collapse: collapse;
+    margin: 15px;
+    position: relative;
+}
+
+#product_table tbody td {
+    padding: 10px;
+}
+
+#product_table .product_id, #product_table .product_name {
+    padding: 0;
+    position: relative;
+}
+
+#review_admin tr.head, #product_table tr.head {
+    background-color: lightblue;
+    border-bottom: 1px solid rgb(185, 215, 229);
+}
+
+#review_admin th, #product_table th {
+    padding: 10px;
+    text-align: left;
+}
+
+#th_prod_name,
+#th_prod_id {
+    width: 170px;
+}
+
+#product_table tr {
+    height: 65px;
+}
+
+#product_table tr.message {
+    height: 30px;
+}
+#product_table tbody .message td {
+    padding: 0 0 5px 10px;
+}
+
+#product_table tr.message td {
+    width: 100%;
+    /*
+    -webkit-column-span: all; // Chrome, Safari, Opera
+    */
+    column-span: all;
+}
+
+#product_table tbody tr:nth-child(4n+1),
+#product_table tbody tr:nth-child(4n+2)
+{
+    background-color: white;
+}
+
+th#update_header {
+    width: 60px;
+}
+
+td.update_submit .edit_submit {
+    display: none;
+}
+
+#product_table .update_submit {
+    padding: 0;
+}
+
+.edit_button a {
+    display: none;
+}
+.checkbox_toggle {
+    display: none;
+}
+
+#response {
+    margin-top: 20px;
+}
+
+.error {
+    color: red;
+}
+
+
+.success {
+    font-size: 20px;
+}
+
+.success > table {
+    border-collapse: collapse;
+}
+
+.success thead {
+    background: #e58b20 none repeat scroll 0 0;
+    border: 1px solid #b76f1a;
+    font-weight: normal;
+    color: white;
+}
+
+.success td {
+    min-width: 100px;
+    padding: 5px 0 0 10px;
+    text-align: left;
+}
+
+.success tbody td {
+    border: 1px solid darkgrey;
+}
