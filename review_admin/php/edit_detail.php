@@ -128,7 +128,7 @@ class edit_detail extends edit_abstract {
      * @param $get_vars string
      * @param $id integer ID for the review record in star_reviews.sql
      */
-    protected function set_header($get_vars, $id) {
+    protected function set_header ($get_vars, $id) {
         $url      = '../detail_edit.php';
         $get_vars = trim($get_vars);
         $id       = trim($id);
