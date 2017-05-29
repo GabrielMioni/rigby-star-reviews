@@ -1,4 +1,4 @@
-#review_admin, #review_search {
+#review_admin, #review_search, #product_table {
     border-collapse: collapse;
     margin: 15px;
     width: 95%;
@@ -8,11 +8,13 @@
 #review_admin tbody .tr_white {
     background-color: white;
 }
-#review_admin th {
+#review_admin th,
+#product_table th {
     text-align: left;
     padding: 10px;
 }
-#review_admin tr.head {
+#review_admin tr.head,
+#product_table tr.head {
     border-bottom: 1px solid rgb(185, 215, 229);
     background-color: lightblue;
 }
@@ -30,5 +32,12 @@
     width: 150px;
 }
 #review_admin tbody tr td {
+    padding: 10px;
+}
+
+#product_table tbody tr:nth-child(odd) {
+    background-color: white;
+}
+#product_table tbody td {
     padding: 10px;
 }
