@@ -28,13 +28,6 @@ $current_year = date('Y', time());
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     </head>
     <body>
-    <!--
-        <div id='sub_bar'>
-            <div class='name'>
-                Gabriel Mioni | <span class="purpose">Star Reviews</span>
-            </div>            
-        </div>
-        -->
         <div id='content'>
             <div id='left'>
                 <?php echo $review_form; ?>
@@ -49,7 +42,6 @@ $current_year = date('Y', time());
                 <div id='review_col'>
                     <?php
                     require_once('php/sidebar.php');
-//                    require_once('php/paginator.php');
                     require_once('php/paginator_reviews.php');
 
                     /* Configuration variables for sidebar and paginator classes */
