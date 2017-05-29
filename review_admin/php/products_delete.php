@@ -10,7 +10,7 @@ require_once(RIGBY_ROOT .'/php/sql_pdo/sql_pdo.php');
 class products_delete
 {
     protected $is_ajax;
-    protected $pdo_array;
+    protected $pdo_array = array();
 
     protected $affected_reviews = 0;
     protected $deleted_count    = 0;
@@ -38,14 +38,17 @@ class products_delete
                 $tmp[] = (int)htmlspecialchars($prod_id);
             }
         }
-        if (!empty($tmp))
-        {
-            return $tmp;
-        }
+        return $tmp;
     }
     protected function get_names_and_prod_ids(array $pdo_array)
     {
         $tmp = array();
+
+        if (empty($pdo_array))
+        {
+            return $tmp;
+        }
+        
         $query = "SELECT product_id, product_name FROM products WHERE ";
 
         foreach ($pdo_array as $pdo_elm)
@@ -60,7 +63,7 @@ class products_delete
 
         } catch (PDOException $e) {
             error_log($e->getMessage());
-            $this->problems = 'Your request could not be processed';
+            $this->problems[] = 'Your request could not be processed';
         }
         return $tmp;
     }
@@ -122,7 +125,6 @@ class products_delete
 
             $message .= "<div class='deleted_count'>Deleted $deleted_count</div>";
             $message .= '<table>';
-//            $message .= "<tr><td colspan='2'>Deleted: $deleted_count</td></tr>";
             $message .= '<thead>';
             $message .= '<tr><td>Product Id</td><td>Product_Name</td></tr>';
             $message .= '</thead>';
