@@ -49,7 +49,8 @@ $current_year = date('Y', time());
                 <div id='review_col'>
                     <?php
                     require_once('php/sidebar.php');
-                    require_once('php/paginator.php');
+//                    require_once('php/paginator.php');
+                    require_once('php/paginator_reviews.php');
 
                     /* Configuration variables for sidebar and paginator classes */
                     $page = '';
@@ -64,9 +65,14 @@ $current_year = date('Y', time());
                     ?>
                 </div>
                 <?php
+                $build_pagination = new paginator_reviews($page, $reviews_per_page, $buttons_per_page, $rating);
+                $bar = $build_pagination->get_pagination_bar();
+                echo $bar;
+                /* Experiment
                     $build_pagination = new paginator($page, $rating, $reviews_per_page, $buttons_per_page);
                     $bar = $build_pagination->get_pagination_bar();
                     echo $bar;
+                */
                 ?>
             </div>
         </div>
