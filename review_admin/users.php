@@ -58,7 +58,7 @@ $toolbar = $bars->return_toolbar();
             echo $sidebar;
             ?>
             <div id='hud'>
-                <div id='hud_title'><h3>Reviews</h3></div>
+                <div id='hud_title'><h3>Users</h3></div>
                 <div id='user_wrap'>
                     <div id='add_user'>
                         <i class='fa fa-plus' aria-hidden='true'></i>
