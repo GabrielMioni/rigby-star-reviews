@@ -355,12 +355,12 @@ class installer {
             header('Location: ' . $server);
             exit;
         } else {
-//            require_once('test_define.php');
 
             $sql_table_review = $this->create_review_table();
             $sql_table_users = $this->create_users_table();
+            $sql_table_products = $this->create_products_table();
 
-            if ($sql_table_review !== true || $sql_table_users !== true) {
+            if ($sql_table_review !== true || $sql_table_users !== true || $sql_table_products !== true) {
                 $_SESSION['3_sql_error'] = "Rigby connected with MySQL, but couldn't create the necessary tables on the MySQL database. Maybe your user privileges don't include write access.";
                 $_SESSION['3_sql_db'] = $database;
                 $_SESSION['3_sql_un'] = $username;
@@ -529,7 +529,7 @@ class installer {
                     email VARCHAR(50) NOT NULL,
                     cont VARCHAR(1000) NOT NULL,
                     ip VARCHAR(32) NOT NULL,
-                    product VARCHAR (10),
+                    product VARCHAR (10) DEFAULT 0,
                     hidden int(1) DEFAULT NULL,
                     fake tinyint(1) DEFAULT NULL,
                     date timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -552,6 +552,20 @@ class installer {
                     token_exp datetime DEFAULT NULL,
                     admin tinyint(1) DEFAULT NULL,
                     locked tinyint(1) NOT NULL DEFAULT 0)';
+
+        $create = $this->create_table($query);
+        return $create;
+    }
+
+    protected function create_products_table()
+    {
+        $query = 'CREATE TABLE products (
+                    id SMALLINT (5) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+                    product_id VARCHAR(10) NOT NULL,
+                    product_name VARCHAR(50) NOT NULL,
+                    review_count SMALLINT(5) DEFAULT 0,
+                    create_date timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    last_review DATE DEFAULT NULL)';
 
         $create = $this->create_table($query);
         return $create;
