@@ -38,12 +38,17 @@ class review_submit {
 
     protected $insert_err = null;
 
+    /** @var string Honeypot to catch robots. This should never not be null */
+    protected $honeypot = null;
+
     /** @var mixed|null Used as a flag indicating if errors were found */
     protected $error_found = null;
     
     public function __construct($is_ajax = false) {
         $this->is_ajax = $is_ajax;
         $this->url     = isset($_POST['url']) ? $this->check_url($_POST['url']) : false;
+        
+        $this->honeypot = $this->check_honeypot('convefe');
 
         $this->post_array['email']      = isset($_POST['email'])   ? $this->check_email($_POST['email'])        : -1;
         $this->post_array['name']       = isset($_POST['name'])    ? $this->check_text_input($_POST['name'])    : -1;
@@ -54,7 +59,18 @@ class review_submit {
         $this->post_array['title']      = isset($_POST['title'])   ? $this->check_text_input(($_POST['title'])) : -1;
         $this->post_array['hidden']     = $this->check_hidden();
 
-        $this->try_insert($this->post_array, $this->is_ajax, $this->url);
+        $this->try_insert($this->post_array, $this->is_ajax, $this->url, $this->honeypot);
+    }
+    
+    protected function check_honeypot($honeypot_name)
+    {
+        if (isset($_POST[$honeypot_name]))
+        {
+            if (trim($_POST[$honeypot_name]) !== '')
+            {
+                return false;
+            }
+        }
     }
 
     /**
@@ -114,17 +130,14 @@ class review_submit {
         // Check if the last review submission took place less than 60 seconds ago.
         if ($current_time > $last_submit_time)
         {
-//            $okay_state = 1;
             $okay_state = true;
         } else {
-//            $okay_state = -1;
             $okay_state = false;
         }
 
         // If no previous submissions were found, always return true.
         if ($result == '')
         {
-//            $okay_state = 1;
             $okay_state = true;
         }
 
@@ -280,9 +293,9 @@ class review_submit {
      * @param $is_ajax bool Flag for whether the request is from Ajax or not.
      * @param $url string Passed from $_POST['url'].
      */
-    protected function try_insert(array $post_array, $is_ajax, $url)
+    protected function try_insert(array $post_array, $is_ajax, $url, $honeypot)
     {
-        if ($url == false )
+        if ($url == false || $honeypot !== null)
         {
             header('HTTP/1.1 404 Not Found');
             exit;
