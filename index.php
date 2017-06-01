@@ -58,7 +58,7 @@ $current_year = date('Y', time());
         </div>
         <div id='footer'>
             <div id="foot_copy">
-                &copy; <?php echo $current_year; session_destroy(); ?> Gabriel Mioni
+                &copy; <?php echo $current_year; ?> Gabriel Mioni
             </div>
         </div>
         <script type='text/javascript' src='../../scripts/js/main.js'></script>
