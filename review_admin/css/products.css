@@ -2,18 +2,68 @@
  * Search Form
  * ****************************/
 
-#product_search > #search_form {
-    max-width: 639px;
+#product_search > #search_form,
+#add > #product_plus {
+    max-width: 700px;
     padding: 10px;
 }
-.product_name_search, .product_id_search {
+
+#add_product_submit, #search_product_submit {
+    margin-top: 15px;
+    background-color: #4fc3f7;
+    border: 1px solid #4fc3f7;
+    color: white;
+    text-shadow: -1px 0 #03a9f4, 0 1px #03a9f4, 1px 0 #03a9f4, 0 -1px #03a9f4;
+}
+
+#add_product_inputs {
+    margin-top: 15px;
+    background-color: #E58B20;
+    border: 1px solid #E58B20;
+    color: white;
+    text-shadow: -1px 0 #E58B20, 0 1px #E58B20, 1px 0 #E58B20, 0 -1px #E58B20;
+    display: none;
+}
+
+#add_product_submit, #search_product_submit, #add_product_inputs {
+    cursor: pointer;
+    font-size: 17px;
+    min-width: 100%;
+    padding: 5px;
+    text-decoration: none;
+    transition: all 0.5s ease 0s;
+}
+
+.delete_row {
+    cursor: pointer;
+    display: inline-block;
+    height: 30px;
+    text-align: center;
+    vertical-align: top;
+    width: 50px;
+}
+
+.delete_row .fa {
+    padding-top: 7px;
+}
+
+.product_name_search,
+.product_id_search,
+.product_name_add,
+.product_id_add {
     display: inline-block;
     width: 315px;
 }
-.product_name_search > label.product_label, .product_id_search > label.product_label {
+.product_name_search > label.product_label,
+.product_id_search > label.product_label,
+.product_name_add > label.product_label,
+.product_id_add > label.product_label{
     display: block;
 }
-.product_name_search input, .product_id_search input {
+.product_name_search input,
+.product_id_search input,
+.product_name_add input,
+.product_id_add input {
     min-width: 100%;
 }
 #product_search div {
