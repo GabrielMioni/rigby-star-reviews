@@ -88,6 +88,7 @@ trait search_methods
 
         if ($all_columns !== false)
         {
+            $query .= " ORDER by create_date desc";
             $query .= " LIMIT ?,?";
             $pdo_array[] = $row_start;
             $pdo_array[] = $row_end;
