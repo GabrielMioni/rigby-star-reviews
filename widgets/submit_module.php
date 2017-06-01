@@ -346,12 +346,17 @@ class submit_module
                         </form>
                         <script type='text/javascript' src='$review_stars_js'></script>
                         <script type='text/javascript' src='$review_form_js'></script>";
-
-
+        
+        $this->unset_sessions('email');
+        $this->unset_sessions('name');
+        $this->unset_sessions('product');
+        $this->unset_sessions('comment');
+        $this->unset_sessions('star_rev');
+        $this->unset_sessions('title');
         return $form_html;
     }
 
-    function get_js_filepath($js_file_name)
+    protected function get_js_filepath($js_file_name)
     {
         $path = RIGBY_ROOT;
         $approot = substr($path,strlen($_SERVER['DOCUMENT_ROOT']));
@@ -361,7 +366,7 @@ class submit_module
         return $url . '://' . $js_file;
     }
 
-    function get_full_url()
+    protected function get_full_url()
     {
         $url  = isset($_SERVER['HTTPS']) ? 'https' : 'http';
         $url .= '://' . $_SERVER['HTTP_HOST'];
@@ -369,6 +374,15 @@ class submit_module
 
         return $url;
     }
+
+    protected function unset_sessions($session_name) {
+        if (isset($_SESSION[$session_name]))
+        {
+            unset($_SESSION[$session_name]);
+        }
+    }
+
+
 
     public function return_submit_module()
     {
