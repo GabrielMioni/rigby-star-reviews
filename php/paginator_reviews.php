@@ -2,31 +2,46 @@
 require_once('paginator_abstract.php');
 require_once('sql_pdo/sql_define.php');
 require_once('sql_pdo/sql_pdo.php');
-/**
- * Created by PhpStorm.
- * User: gabriel
- * Date: 5/15/17
- * Time: 9:37 PM
- */
+
 
 class paginator_reviews extends paginator_abstract
 {
     protected $rating;
+    protected $product_id;
 
-    public function __construct($page, $results_per_page, $buttons_per_bar, $rating)
+    public function __construct($page, $results_per_page, $buttons_per_bar, $rating, $product_id = false)
     {
-
-        $this->rating = $this->set_rating($rating);
+        $this->rating     = $this->set_rating($rating);
+        $this->product_id = $this->check_product_id($product_id);
 
         parent::__construct($page, $results_per_page, $buttons_per_bar);
     }
 
+    protected function check_product_id($product_id)
+    {
+        if ($product_id == false)
+        {
+            return false;
+        } else {
+            return htmlspecialchars($product_id);
+        }
+    }
+
     protected function set_result_count()
     {
+        $pdo = array();
+        $product_id = $this->product_id;
         $query = "SELECT COUNT(*) FROM star_reviews WHERE hidden !=1 AND stars LIKE ?;";
+        $pdo[] = $this->rating;
+
+        if ($product_id !== false)
+        {
+            $query .= ' AND product = ?';
+            $pdo[] = $product_id;
+        }
 
         try {
-            $result = sql_pdo::run($query, [$this->rating])->fetchColumn();
+            $result = sql_pdo::run($query, $pdo)->fetchColumn();
             return $result;
         } catch (PDOException $e) {
             echo $e->getMessage();
