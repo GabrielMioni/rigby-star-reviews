@@ -83,6 +83,12 @@ if (isset($_SESSION['failure_message']))
     $failure_message = "<div class='error'>$failure_message</div>";
 }
 
+$product_add_msg = '';
+if (isset($_SESSION['product_add']))
+{
+    $product_add_msg = $_SESSION['product_add'];
+}
+
 $build_table = new product_table($product_name, $product_id, $date_set, $date_start, $date_end, $page, $results_per_page);
 $table = $build_table->return_table();
 
@@ -174,7 +180,7 @@ set_select_val($sel_10, $sel_20, $sel_50, $sel_100, $sel_1000);
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Reviews</title>
+    <title>Products</title>
     <link rel="stylesheet" href="admin.css">
     <link rel="stylesheet" href="css/reviews.css">
     <link rel="stylesheet" href="css/products.css">
@@ -200,6 +206,35 @@ echo $toolbar;
     <div id='hud'>
         <div id='hud_title'><h3>Products</h3></div>
         <div id='hud_cont'>
+            <div id='add' class='box'>
+                <h3>Add Product</h3>
+                <div class="box_toggle">
+                    <div class="tog toggle_up"></div>
+                </div>
+                <div id='product_plus' class="box_cont">
+                    <form id='product_add' action="php/products_add.php" method="post">
+                        <div class="search_row">
+                            <div class="product_id_add">
+                                <label class='product_label' for="product_id_add">Product Id:</label>
+                                <input type="text" name="product_id_add_1">
+                            </div>
+                            <div class="product_name_add">
+                                <label class='product_label' for="product_name_add">Product name:</label>
+                                <input type="text" name="product_name_add_1">
+                            </div>
+                        </div>
+                        <button id="add_product_inputs"><i class="fa fa-plus-square" aria-hidden="true"></i> Products</button>
+                        <input id='add_product_submit' type="submit" value="Save Products">
+                    </form>
+                </div>
+            </div>
+            <div id="response">
+                <?php
+                echo $product_add_msg;
+                echo $failure_message;
+                echo $success_message;
+                ?>
+            </div>
             <div id='search' class="box">
                 <h3>Search</h3>
                 <div class="box_toggle">
@@ -217,6 +252,7 @@ echo $toolbar;
                                 <input type="text" name="product_id" value="<?php echo $product_id; ?>">
                             </div>
                         </div>
+                        <!--
                         <div class="search_row">
                             <div class="date_select_wrapper">
                                 <div class="date_type_select">
@@ -238,22 +274,14 @@ echo $toolbar;
                                 </div>
                             </div>
                         </div>
-                        <input type="submit" value="Search Products">
+                        -->
+                        <input id='search_product_submit' type="submit" value="Search Products">
                     </form>
                 </div>
             </div>
             <?php
             echo $pagination_bar;
-            ?>
-            <div id="response">
-                <?php
-                echo $failure_message;
-                echo $success_message;
-                ?>
-            </div>
-            <?php
             echo $table;
-
             if (isset($_SESSION['failure_message']))
             {
                 unset($_SESSION['failure_message']);
@@ -261,6 +289,9 @@ echo $toolbar;
             if (isset($_SESSION['success_message']))
             {
                 unset($_SESSION['success_message']);
+            }
+            if (isset($_SESSION['product_add'])) {
+                unset($_POST['product_add']);
             }
             ?>
         </div>
