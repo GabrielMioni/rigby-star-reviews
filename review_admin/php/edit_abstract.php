@@ -324,7 +324,9 @@ abstract class edit_abstract {
      *
      * @return mixed
      */
-    abstract protected function set_success_message();
+    protected function set_success_message() {
+
+    }
 
     /**
      * Abstract method to set_error messages.
@@ -336,6 +338,8 @@ abstract class edit_abstract {
      * @param array $problems
      * @return mixed
      */
-    abstract protected function set_error_messages(array $problems);
+    protected function set_error_messages(array $problems) {
+
+    }
 
 }
