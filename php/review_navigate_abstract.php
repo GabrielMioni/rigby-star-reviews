@@ -37,6 +37,11 @@ abstract class review_navigate_abstract
     protected $rating;
 
     /**
+     * @var string The product_id the review search is for
+     */
+    protected $product_id;
+
+    /**
      * @var int Sets the number of results that will be displayed per page. If whitespace, defaults
      * to = 8.
      */
