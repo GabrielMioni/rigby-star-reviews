@@ -385,10 +385,47 @@ function edit_enter() {
     });
 }
 
+function add_input_row() {
+    var row_add_int = 2;
+
+    $('#add_product_inputs').on('click', function(e){
+        e.preventDefault();
+        console.log(row_add_int);
+
+        var button = $(this);
+
+        var class_id_add    = 'product_id_add_' + row_add_int;
+        var class_name_add  = 'product_name_add_' + row_add_int;
+
+        var row = '';
+        row +=  '<div class="search_row">';
+        row +=      '<div class="product_id_add">';
+        row +=          '<input name="'+class_id_add+'" type="text">';
+        row +=      '</div> ';
+        row +=      '<div class="product_name_add">';
+        row +=          '<input name="'+class_name_add+'" type="text">';
+        row +=      '</div>';
+        row +=      '<div class="delete_row"><i class="fa fa-trash" aria-hidden="true"></i></div>'
+        row +=  '</div>';
+
+        row_add_int = row_add_int + 1;
+
+        $(row).insertBefore(button);
+    });
+}
+
+function remove_input_row() {
+    $(document).on('click', '.delete_row' ,function(){
+        var parent_row = $(this).parent();
+        parent_row.remove();
+    });
+}
+
 $(document).ready(function () {
     // Display all edit buttons
     $('.edit_button').find('a').show();
     $('.checkbox_toggle').show();
+    $('#add_product_inputs').show();
     toggle_date_inputs();
     click_label();
     toggle_checkboxes();
@@ -396,5 +433,7 @@ $(document).ready(function () {
     edit_enter();
     flag_changed();
     restore_content_if_blank();
+    add_input_row();
+    remove_input_row();
     submit_update();
 });
