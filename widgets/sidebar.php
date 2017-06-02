@@ -7,14 +7,26 @@ require_once(RIGBY_ROOT . '/php/sql_pdo/sql_define.php');
 require_once(RIGBY_ROOT . '/php/sql_pdo/sql_pdo.php');
 
 
-class sidebar2 extends abstract_widget {
+class sidebar extends abstract_widget {
 
     protected $review_array = array();
+
     protected $sidebar;
 
-    public function __construct($page, $reviews_per_page, $rating, $product_id)
+    public function __construct($setting_array = array())
     {
-        parent::__construct($page, $reviews_per_page, $rating, $product_id);
+        if (!empty($setting_array))
+        {
+            $page             = $this->check_setting_element($setting_array, 'page');
+            $reviews_per_page = $this->check_setting_element($setting_array, 'reviews_per_page');
+            $rating           = $this->check_setting_element($setting_array, 'rating');
+            $product_id       = $this->check_setting_element($setting_array, 'product_id');
+
+            parent::__construct($page, $reviews_per_page, $rating, $product_id);
+        } else {
+            parent::__construct('', '', '', '');
+        }
+
 
         $this->review_array = $this->get_reviews($this->product_id, $this->rating, $this->start, $this->per_page);
         $this->sidebar      = $this->build_sidebar($this->review_array);
@@ -33,7 +45,7 @@ class sidebar2 extends abstract_widget {
 
         if ($product_id !== false)
         {
-            $query .= 'product_id = ? AND ';
+            $query .= 'product = ? AND';
             $pdo[] = $product_id;
         }
         if ($rating !== false)
@@ -41,6 +53,7 @@ class sidebar2 extends abstract_widget {
             $query .= 'stars = ? ';
             $pdo[] = $rating;
         }
+        $query = rtrim($query, 'AND');
 
         $query .= ' ORDER BY date desc';
         $query .= ' LIMIT ?, ?';
@@ -162,7 +175,6 @@ class sidebar2 extends abstract_widget {
         $path = RIGBY_ROOT;
         $approot = substr($path,strlen($_SERVER['DOCUMENT_ROOT']));
         $url  = isset($_SERVER['HTTPS']) ? 'https' : 'http';
-//        $js_file = $_SERVER["SERVER_NAME"] . $approot . "/js/review_navigation.js";
         $js_file = $_SERVER["SERVER_NAME"] . $approot . "/js/$js_file_name.js";
 
         return $url . '://' . $js_file;

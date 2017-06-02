@@ -22,6 +22,15 @@ class abstract_widget
         $this->start        = $this->set_start($this->page, $this->per_page);
     }
 
+    protected function check_setting_element(array $array, $index_name)
+    {
+        if (isset($array[$index_name]))
+        {
+            return $array[$index_name];
+        }
+        return '';
+    }
+
     protected function set_rating($rating)
     {
         if (trim($rating) == '')
