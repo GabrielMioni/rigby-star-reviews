@@ -318,6 +318,13 @@
     height: 24px;
     width: 24px;
 }
+.rating .star_half {
+    background: rgba(0, 0, 0, 0) url("../stars/star_half24.png") no-repeat scroll 0 0;
+    display: inline-block;
+    height: 24px;
+    width: 24px;
+}
+
 /*.review_name,*/
 .prod,
 .date {
@@ -329,22 +336,14 @@
 .date_prod {
     bottom: 5px;
     display: inline-block;
-/*    left: 20px;
-    margin: 0;
-    padding-left: 0;
-    padding-right: 0;
-    padding-top: 0; */
     position: relative;
-/*    width: 65%; */
 }
 .date_prod p, .review_title p {
     margin: 0;
-//    padding-left: 20px;
     padding-top: 3px;
 }
 .review_title {
     bottom: 5px;
-/*    display: inline-block; */
     position: relative;
 }
 /* pagination bar*/
@@ -357,8 +356,6 @@
     position: relative;
     margin: 0;
     padding: 0;
-//    text-align: center;
-//    min-width: 505px;
 }
 #pagination_bar .hidden {
     display: none;
@@ -377,7 +374,6 @@
 }
 
 #pagination_bar ul li a {
-//    color: black;
     color: rgba(0, 0, 0, 0.7);
     display: inline-block;
     height: 100%;
@@ -429,10 +425,19 @@
 .nav_faded {
     opacity:.5;
 }
-/*
-.ten_dir {
-    display: inline-block;
-    text-align: center;
-    width: 30px;
+
+/* **************************
+ * - Aggregate Rating
+ * **************************/
+
+#aggregate_rating {
+    max-width: 500px;
 }
-*/
+
+#aggregate_rating .product_name {
+    font-weight: bold;
+}
+#aggregate_rating .avg_rating {
+    position: relative;
+    bottom: 4px;
+}
