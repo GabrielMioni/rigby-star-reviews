@@ -98,8 +98,10 @@ class product_table {
     {
         $table = '<table id="product_table">';
 
-//        $thead = '<thead><tr class="head"><th><input class=\'checkbox_toggle\' type=\'checkbox\'></th></th><th id="th_prod_id">Product ID</th><th id="th_prod_name">Product Name</th><th>Review Count</th><th>Create Date</th><th>Last Review</th><th></th></tr></thead>';
-        $thead = '<thead><tr class="head"><th><input class=\'checkbox_toggle\' type=\'checkbox\'></th><th id="th_prod_id">Product ID</th><th id="th_prod_name">Product Name</th><th id="update_header"></th></th><th>Review Count</th><th>Create Date</th><th>Last Review</th><th></th></tr></thead>';
+        $thead  = '<thead><tr class="head"><th><input class=\'checkbox_toggle\' type=\'checkbox\'></th><th id="th_prod_id">Product ID</th><th id="th_prod_name">Product Name</th><th id="update_header"></th></th><th>Review Count</th><th>Create Date</th><th>Last Review</th><th></th></tr></thead>';
+        $thead .= '  <script type="text/javascript">
+                        $(".checkbox_toggle").show();
+                    </script>';
 
         $tbody = '<tbody>';
 
