@@ -1,14 +1,7 @@
 <?php
-ini_set('display_errors',1);
-ini_set('display_startup_errors',1);
-error_reporting(-1);
+session_start();
 
-/* ********************************************************************
- * Define RIGBY_ROOT
- * - Any classes calling the sql_pdo class will fail without RIGBY_ROOT
- * ********************************************************************/
 require_once('../rigby_root.php');
-
 require_once(RIGBY_ROOT . '/review_login/login_check.php');
 require_once('php/admin_bars.php');
 
@@ -17,14 +10,13 @@ require_once('php/admin_bars.php');
  * -display results from the review search form at <div id='review_search' class="box_cont">.
  * ********************************************************************************************/
 require_once('php/product_table.php');
-require_once('php/products_pagination.php');
-// require_once('php/search_reviews.php');
-//require_once('php/search_pagination.php');
+require_once('php/products_paginator.php');
 
-/* ***********************************************************************************
- * $_SESSION array used to hold Rigby user credentials, error messages and input values.
- * ***********************************************************************************/
-session_start();
+$paginator_settings = array();
+$paginator_settings['results_per_page'] = '10';
+
+$paginator = new products_paginator($paginator_settings);
+$bar = $paginator->return_pagination();
 
 /* *************************************************************
  * Confirm the Rigby user is logged in with correct credentials.
@@ -91,10 +83,10 @@ if (isset($_SESSION['product_add']))
 
 $build_table = new product_table($product_name, $product_id, $date_set, $date_start, $date_end, $page, $results_per_page);
 $table = $build_table->return_table();
-
+/*
 $build_pagination = new products_pagination($page, 10, 10);
 $pagination_bar = $build_pagination->get_pagination_bar();
-
+*/
 /**
  * Sets variables to be displayed in the review form's text input values.
  *
@@ -280,7 +272,7 @@ echo $toolbar;
                 </div>
             </div>
             <?php
-            echo $pagination_bar;
+            echo $bar;
             echo $table;
             if (isset($_SESSION['failure_message']))
             {

@@ -59,8 +59,12 @@ function navigate_reviews()
             }
 
             // Update #pagination_bar and #review_col
+            /*
             navigation_ajax(page_pointer, rating_pointer, 'php/paginator_ajax.php', '#pagination_bar', set_element_callback);
             navigation_ajax(page_pointer, rating_pointer, 'php/sidebar_ajax.php', '#review_col', set_element_callback);
+            */
+            navigation_ajax(page_pointer, rating_pointer, 'widgets/ajax/sidebar_ajax.php', '#review_col', set_element_callback);
+            navigation_ajax(page_pointer, rating_pointer, 'widgets/ajax/paginator_ajax.php', '#pagination_bar', set_element_callback);
 
             // Scroll back to the top of the page to show results.
             window.scrollTo(0,0);

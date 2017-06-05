@@ -3,11 +3,12 @@ if (!defined('RIGBY_ROOT'))
 {
     require_once('../../rigby_root.php');
 }
-require_once(RIGBY_ROOT . '/widgets/paginator.php');
+require_once(RIGBY_ROOT . '/widgets/paginator_public.php');
 
 if (isset($_POST['ajax']))
 {
     $setting_array = array();
+//    $setting_array['url'] = '';
 
     if (isset($_POST['page']))
     {
@@ -22,8 +23,8 @@ if (isset($_POST['ajax']))
         $setting_array['product_id'] = $_POST['product'];
     }
 
-    $paginator = new paginator($setting_array);
-    $bar = $paginator->get_pagination_bar();
+    $paginator = new paginator_public($setting_array);
+    $bar = $paginator->return_pagination();
     $bar = str_replace('<div id="pagination_bar">', '', $bar);
     $bar = str_replace('</div>', '', $bar);
     echo $bar;

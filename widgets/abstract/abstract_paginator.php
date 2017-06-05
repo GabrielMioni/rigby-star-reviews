@@ -1,56 +1,55 @@
 <?php
 
-require_once('abstract_widget.php');
+require_once('abstract_navigate.php');
+require_once('trait_data_collect.php');
 
-class paginator extends abstract_widget
+abstract class abstract_paginator extends abstract_navigate
 {
+    use trait_data_collect;
+
     protected $buttons_per_bar;
-    protected $pagination_chunks;
+    protected $pagination_chunks = array();
     protected $chunk_pointer;
     protected $query_string;
-    protected $ajax_url;
+    protected $url;
 
     protected $pagination_bar;
 
-    public function __construct(array $setting_array = array())
+    public function __construct(array $settings_array = array())
     {
-        $page             = $this->check_setting_element($setting_array, 'page');
-        $reviews_per_page = $this->check_setting_element($setting_array, 'reviews_per_page');
-        $rating           = $this->check_setting_element($setting_array, 'rating');
-        $product_id       = $this->check_setting_element($setting_array, 'product_id');
+        $page             = $this->check_settings_and_get($settings_array, 'page');
+        $results_per_page = $this->check_setting_element($settings_array, 'results_per_page');
 
-        parent::__construct($page, $reviews_per_page, $rating, $product_id);
+        parent::__construct($page, $results_per_page);
 
-        $this->buttons_per_bar   = $this->set_buttons_per_bar($setting_array);
-        $this->ajax_url          = $this->check_setting_element($setting_array, 'ajax_url');
-
-        $this->pagination_chunks = $this->set_pagination_chunks($this->last_page, $this->buttons_per_bar);
+        $this->buttons_per_bar   = $this->set_buttons_per_bar($settings_array);
+        $this->url               = $this->set_url($settings_array);
+        $this->pagination_chunks = $this->set_pagination_chunks($this->page_max, $this->buttons_per_bar);
         $this->chunk_pointer     = $this->set_chunk_pointer($this->page, $this->pagination_chunks);
-//        $this->query_string      = $this->set_url_query_string($this->rating, $this->product_id);
+
         $this->query_string      = $this->set_url_query_string();
 
-        $this->pagination_bar = $this->build_pagination_bar($this->page, $this->last_page, $this->pagination_chunks, $this->ajax_url, $this->query_string);
+        $this->pagination_bar = $this->build_pagination_bar($this->page, $this->page_max, $this->pagination_chunks, $this->url, $this->query_string);
     }
 
-    protected function set_buttons_per_bar(array $setting_array)
+    abstract protected function set_url_query_string();
+
+    protected function set_buttons_per_bar(array $settings_array)
     {
-        $bpb = $this->check_setting_element($setting_array, 'buttons_per_bar');
+        $bpb = $this->check_setting_element($settings_array, 'buttons_per_bar');
 
         return $this->set_int_value($bpb, 10);
     }
 
-    protected function set_int_value($int_val, $if_empty_val)
+    protected function set_url(array $settings_array)
     {
-        $out = $if_empty_val;
-        if (trim($int_val !== ''))
+        $url = $this->check_setting_element($settings_array, 'url');
+
+        if (trim($url) == '')
         {
-            $out = (int)$int_val;
+            $url = strtok($_SERVER["REQUEST_URI"],'?');
         }
-        if ($out < 1)
-        {
-            $out = 1;
-        }
-        return $out;
+        return $url;
     }
 
     protected function set_pagination_chunks($buttons_needed, $buttons_per_bar)
@@ -82,49 +81,19 @@ class paginator extends abstract_widget
         return $pointer;
     }
 
-    protected function set_url_query_string()
-    {
-        $rating = $this->rating;
-        $product_id = $this->product_id;
-
-        $query_string = '';
-
-        switch ($rating)
-        {
-            case '1':
-            case '2':
-            case '3':
-            case '4':
-            case '5':
-                $query_string .= '&rating=' . $rating;
-                break;
-            default:
-                break;
-        }
-        switch ($product_id)
-        {
-            case '':
-                break;
-            default:
-                $query_string .= '&product=' . $product_id;
-                break;
-        }
-        return $query_string;
-    }
-
-    protected function build_pagination_bar($page, $last_page, array $pagination_chunk, $ajax_url, $query_string)
+    protected function build_pagination_bar($page, $last_page, array $pagination_chunk, $url, $query_string)
     {
         /** @var int $chunk_pointer The key for the $pagination_chunk child element the Rigby user occupies. */
         $chunk_pointer = $this->set_chunk_pointer($page, $pagination_chunk);
 
-        /** @var $url string URL that's used as base for pagination button links. Does not include query string. */
-
+        /*
         if ($ajax_url !== '')
         {
             $url = $ajax_url;
         } else {
             $url = strtok($_SERVER["REQUEST_URI"],'?');
         }
+        */
 
         /* Find the parent array in $pagination_chunk that should be used to build the pagination bar. */
         if (isset($pagination_chunk[$chunk_pointer]))

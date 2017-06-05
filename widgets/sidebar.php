@@ -1,65 +1,67 @@
 <?php
-if (!defined('RIGBY_ROOT')) {
+if (!defined('RIGBY_ROOT'))
+{
     require_once('../rigby_root.php');
 }
-require_once(RIGBY_ROOT . '/widgets/abstract_widget.php');
+require_once('abstract/abstract_navigate.php');
+require_once('abstract/trait_data_collect.php');
+require_once('abstract/trait_visitor_navigate.php');
+
 require_once(RIGBY_ROOT . '/php/sql_pdo/sql_define.php');
 require_once(RIGBY_ROOT . '/php/sql_pdo/sql_pdo.php');
 
 
-class sidebar extends abstract_widget {
+class sidebar extends abstract_navigate
+{
+    use trait_data_collect;
+    use trait_visitor_navigate;
 
     protected $review_array = array();
 
+    protected $rating;
+    protected $product_id;
+
     protected $sidebar;
 
-    public function __construct($setting_array = array())
+    public function __construct($settings_array = array())
     {
-        if (!empty($setting_array))
-        {
-            $page             = $this->check_setting_element($setting_array, 'page');
-            $reviews_per_page = $this->check_setting_element($setting_array, 'reviews_per_page');
-            $rating           = $this->check_setting_element($setting_array, 'rating');
-            $product_id       = $this->check_setting_element($setting_array, 'product_id');
+        $page = $this->check_settings_and_get($settings_array, 'page');
+        $results_per_page = $this->check_setting_element($settings_array, 'results_per_page');
 
-            parent::__construct($page, $reviews_per_page, $rating, $product_id);
-        } else {
-            parent::__construct('', '', '', '');
-        }
+        parent::__construct($page, $results_per_page);
 
+        $this->rating       = $this->check_settings_and_get($settings_array, 'rating');
+        $this->product_id   = $this->check_settings_and_get($settings_array, 'product_id');
 
-        $this->review_array = $this->get_reviews($this->product_id, $this->rating, $this->start, $this->per_page);
+        $this->review_array = $this->get_reviews($this->product_id, $this->rating, $this->sql_start, $this->results_per_page);
+
+//        echo '<pre>Review Data<br>' . print_r($this->review_array) . '</pre>';
         $this->sidebar      = $this->build_sidebar($this->review_array);
     }
 
-    protected function get_reviews($product_id, $rating, $start, $reviews_per_page)
+    protected function get_reviews($prod_id, $rating, $start, $reviews_per_page)
     {
-
-        $query = "SELECT * FROM star_reviews ";
+        $query = "SELECT * FROM star_reviews";
         $pdo = array();
 
-        if ($product_id !== false || $rating !== false)
+        if ($prod_id !== false || $rating !== false)
         {
-            $query .= 'WHERE ';
+            $query .= ' WHERE';
         }
 
-        if ($product_id !== false)
-        {
-            $query .= 'product = ? AND';
-            $pdo[] = $product_id;
-        }
-        if ($rating !== false)
-        {
-            $query .= 'stars = ? ';
-            $pdo[] = $rating;
-        }
-        $query = rtrim($query, 'AND');
+        $query .= $this->trait_append_query_data($rating, ' stars = ? ', $pdo);
+        $query .= ($rating && $prod_id) ? ' AND' : '';
+        $query .= $this->trait_append_query_data($prod_id, ' product = ?', $pdo);
 
         $query .= ' ORDER BY date desc';
         $query .= ' LIMIT ?, ?';
         $pdo[] = $start;
         $pdo[] = $reviews_per_page;
 
+/*
+        echo "Query: $query<br>" . '<br>';
+        echo '<pre>' . print_r($pdo) . '</pre>';
+*/
         try {
             $results = sql_pdo::run($query, $pdo)->fetchAll();
             return $results;
@@ -93,7 +95,8 @@ class sidebar extends abstract_widget {
         return $review_column;
     }
 
-    protected function review_card_formatter(array $review) {
+    protected function review_card_formatter(array $review)
+    {
         $title   = $review['title'];
         $name    = $review['name'];
         $product = $this->get_product_name($review['product']);
@@ -140,13 +143,15 @@ class sidebar extends abstract_widget {
         }
     }
 
-    protected function process_content($cont) {
+    protected function process_content($cont)
+    {
         $cont = '<p>'.$cont;
         $data = preg_replace('#(?:<br\s*/?>\s*?){2,}#', '</p><p>', $cont);
         return rtrim($data, '<p></p>');
     }
 
-    protected function set_stars($stars) {
+    protected function set_stars($stars)
+    {
         $star_divs = '';
         for ($s = 0 ; $s < $stars ; ++$s) {
             $star_divs .= "<div class='star_full'></div>";
@@ -154,12 +159,14 @@ class sidebar extends abstract_widget {
         return $star_divs;
     }
 
-    protected function format_date($date) {
+    protected function format_date($date)
+    {
         $format = 'M j, Y';
         return date($format, strtotime($date));
     }
 
-    protected function set_reply($reply) {
+    protected function set_reply($reply)
+    {
         $html = '';
 
         if ($reply !== null) {
