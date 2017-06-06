@@ -1,7 +1,7 @@
 # Rigby Star Reviews
 ## Rating System with Administration Tools
 
-Rigby is a standalone CMS agnostic star rating system. It's easy to install and requires very little coding knowledge to implement. It includes a Wordpres like
+Rigby is a standalone CMS-agnostic star rating system. It's easy to install and requires very little coding knowledge to implement. It includes a Wordpres like
 console that lets administrators view compiled review data, reply to and edit reviews and add/edit product information. Customers and visitors can interact with 
 the Rigby system by leaving reviews, viewing review information for specific ratings and products and find your review ratings during a web search using structured
 data.
