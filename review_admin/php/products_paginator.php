@@ -20,7 +20,6 @@ class products_paginator extends abstract_paginator {
         $this->product_name = $this->check_get('', 'product_name');
 
         parent::__construct($settings_array);
-
     }
 
     protected function set_result_count()

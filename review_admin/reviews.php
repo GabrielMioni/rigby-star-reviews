@@ -13,8 +13,11 @@ require_once('php/admin_bars.php');
  * search_reviews.php and search_pagination.php:
  * -display results from the review search form at <div id='review_search' class="box_cont">.
  * ********************************************************************************************/
-require_once('php/search_reviews.php');
-require_once('php/search_pagination.php');
+// require_once('php/search_reviews.php');
+// require_once('php/search_pagination.php');
+
+require_once('reviews/review_admin_table.php');
+require_once('reviews/review_admin_paginator.php');
 
 /* ***********************************************************************************
  * $_SESSION array used to hold Rigby user credentials, error messages and input values.
@@ -39,14 +42,22 @@ $toolbar = $bars->return_toolbar();
  * Display results from search criteria [set as $_GET values by the HTML search form].
  * - If no search criteria is set, default display is 10 results.
  * *************************************************************************************/
-$search_review_table = new search_reviews();
-$review_table = $search_review_table->return_table();
+// $search_review_table = new search_reviews();
+// $review_table = $search_review_table->return_table();
+
+$build_review_table = new review_admin_table();
+$review_table = $build_review_table->return_table();
 
 /* *******************************************************************
  * Display pagination bar to allow the Rigby user to traverse reviews.
  * *******************************************************************/
-$search_pagination = new search_pagination();
-$pagination_bar = $search_pagination->return_pagination();
+
+$paginator = new paginator_review_admin();
+$pagination_bar = $paginator->return_pagination();
+
+
+//$search_pagination = new search_pagination();
+//$pagination_bar = $search_pagination->return_pagination();
 
 
 /**

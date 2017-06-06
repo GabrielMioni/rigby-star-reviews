@@ -29,10 +29,12 @@ trait trait_data_collect
      *
      * @param $var string The variable being checked. If whitespace, look for a value at $_GET[$get_index]
      * @param $get_index string The index name being checked in $_GET if $var is whitespace.
+     * @param bool $return_false Sets whether the method should return false if $var or $_GET[$get_index] are empty.
+     *
      * @return bool|mixed   If $var is whitespace and data exists at $_GET[$get_index'] returns $_GET element. If $var
      *                      is NOT whitespace, returns $var. Else, returns false.
      */
-    protected function check_get($var, $get_index)
+    protected function check_get($var, $get_index, $return_false = true)
     {
         if (trim($var) == '')
         {
@@ -43,7 +45,11 @@ trait trait_data_collect
         } else {
             return htmlspecialchars($var);
         }
-        return false;
+        if ($return_false == true)
+        {
+            return false;
+        }
+
     }
 
     protected function check_settings_and_get(array $settings_array, $setting_or_get_index, $required = false)

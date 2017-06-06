@@ -26,7 +26,6 @@ class product_table {
         $this->page         = $this->check_input($page);
         $this->results_per_page = $this->check_input($results_per_page);
 
-//        $this->results = $this->set_results($this->product_name, $this->product_id, $this->date_set, $this->date_start, $this->date_end, $this->page, $this->results_per_page);
         $this->results = $this->set_results($this->product_name, $this->product_id, $this->page, $this->results_per_page);
 
         $this->table = $this->build_table($this->results);
@@ -43,7 +42,6 @@ class product_table {
         }
     }
 
-//    protected function set_results($product_name, $product_id, $date_set, $date_start, $date_end, $page, $results_per_page)
     protected function set_results($product_name, $product_id, $page, $results_per_page)
     {
         $pdo = array();
@@ -79,12 +77,6 @@ class product_table {
             return array();
         }
     }
-    
-    protected function push_pdo($value)
-    {
-        
-    }
-        
 
     protected function set_start($page, $results_per_page)
     {
@@ -138,8 +130,6 @@ class product_table {
                                     <input type='submit' value='Delete Selected Products'>
                                 </div>                                
                            </form>";
-
-//        return $table;
         return $form_table;
     }
 

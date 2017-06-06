@@ -216,6 +216,9 @@ echo $toolbar;
                             </div>
                         </div>
                         <button id="add_product_inputs"><i class="fa fa-plus-square" aria-hidden="true"></i> Products</button>
+                        <script type="text/javascript">
+                            $('#add_product_inputs').show();
+                        </script>
                         <input id='add_product_submit' type="submit" value="Save Products">
                     </form>
                 </div>
@@ -244,29 +247,6 @@ echo $toolbar;
                                 <input type="text" name="product_id" value="<?php echo $product_id; ?>">
                             </div>
                         </div>
-                        <!--
-                        <div class="search_row">
-                            <div class="date_select_wrapper">
-                                <div class="date_type_select">
-                                    <div class="date_rad">
-                                        <input name="date_range" value="0" type="radio"><label for="date_single">Date</label>
-                                    </div>
-                                    <div class="date_rad">
-                                        <input name="date_range" value="1" type="radio" checked="checked"><label for="date_range">Date Range</label>
-                                    </div>
-                                </div>
-                                <div class="product_date_start">
-                                    <input type="text" name="date_start" value="<?php echo $date_start; ?>">
-                                </div>
-                                <div class="product_date_end">
-                                    <input type="text" name="date_end" value="<?php echo $date_end; ?>">
-                                </div>
-                                <div class="product_date_set">
-                                    <input type="text" name="date_set" value="<?php echo $date_set; ?>">
-                                </div>
-                            </div>
-                        </div>
-                        -->
                         <input id='search_product_submit' type="submit" value="Search Products">
                     </form>
                 </div>
