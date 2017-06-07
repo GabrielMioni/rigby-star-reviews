@@ -9,14 +9,22 @@ require_once('php/admin_bars.php');
  * search_reviews.php and search_pagination.php:
  * -display results from the review search form at <div id='review_search' class="box_cont">.
  * ********************************************************************************************/
-require_once('php/product_table.php');
-require_once('php/products_paginator.php');
+// require_once('php/product_table.php');
+//require_once('php/products_paginator.php');
 
+require_once('products/products_admin_paginator.php');
+require_once('products/products_admin_table.php');
+
+/*
 $paginator_settings = array();
 $paginator_settings['results_per_page'] = '10';
 
 $paginator = new products_paginator($paginator_settings);
 $bar = $paginator->return_pagination();
+*/
+
+$build_paginator = new products_admin_paginator();
+$paginator_bar = $build_paginator->return_pagination();
 
 /* *************************************************************
  * Confirm the Rigby user is logged in with correct credentials.
@@ -80,9 +88,16 @@ if (isset($_SESSION['product_add']))
 {
     $product_add_msg = $_SESSION['product_add'];
 }
-
+/*
 $build_table = new product_table($product_name, $product_id, $date_set, $date_start, $date_end, $page, $results_per_page);
 $table = $build_table->return_table();
+*/
+
+$build_table = new products_admin_table();
+$table = $build_table->return_table();
+
+
+
 /*
 $build_pagination = new products_pagination($page, 10, 10);
 $pagination_bar = $build_pagination->get_pagination_bar();
@@ -252,7 +267,7 @@ echo $toolbar;
                 </div>
             </div>
             <?php
-            echo $bar;
+            echo $paginator_bar;
             echo $table;
             if (isset($_SESSION['failure_message']))
             {
