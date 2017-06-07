@@ -5,9 +5,7 @@ if (!defined('RIGBY_ROOT'))
     require_once('../../rigby_root.php');
 }
 require_once('trait_review_select.php');
-
 require_once(RIGBY_ROOT . '/widgets/abstract/abstract_paginator.php');
-require_once(RIGBY_ROOT . '/widgets/abstract/trait_append_query_data.php');
 
 class paginator_review_admin extends abstract_paginator
 {
