@@ -29,9 +29,9 @@ require_once('php/admin_bars.php');
  * Include classes that create dashboard elements.
  * - These classes are called in the HTML for clarity.
  * ********************************************************************/
-require_once('php/dash_glance.php');
-require_once('php/dash_bars.php');
-require_once('php/dash_activity.php');
+require_once('dashboard/dash_glance.php');
+require_once('dashboard/dash_bars.php');
+require_once('dashboard/dash_activity.php');
 
 /* ***********************************************************************************
  * $_SESSION array used to hold Rigby user credentials, error messages and input values.
