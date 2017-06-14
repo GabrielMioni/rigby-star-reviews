@@ -11,6 +11,7 @@ if (!defined('RIGBY_ROOT')) {
 
 require_once(RIGBY_ROOT . '/php/sql_pdo/sql_define.php');
 require_once(RIGBY_ROOT . '/php/sql_pdo/sql_pdo.php');
+require_once(RIGBY_ROOT . '/php/products_array_set.php');
 require_once('Faker/src/autoload.php');
 
 
@@ -24,6 +25,8 @@ class build_fake_reviews {
     protected $date_start;
     protected $date_end;
     protected $review_count;
+
+    protected $product_array = array();
 
     protected $created_count = 0;
 
@@ -43,6 +46,8 @@ class build_fake_reviews {
         $this->problem_msg = $this->check_for_empty_inputs($this->date_start, $this->date_end, $this->review_count);
 
         $this->check_problem($this->problem_msg, $this->is_ajax);
+
+        $this->product_array = $this->set_products();
 
         $this->faker_obj = Faker\Factory::create();
 
@@ -157,7 +162,7 @@ class build_fake_reviews {
     protected function insert_fake_reviews(array $fake_reviews)
     {
         try {
-            $stmt = sql_pdo::prepare("INSERT INTO star_reviews (title, date, stars, name, email, ip, cont, hidden, fake) VALUES (?, ?, ?, ?, ?, ?, ?,0, 1)");
+            $stmt = sql_pdo::prepare("INSERT INTO star_reviews (title, date, stars, name, email, ip, cont, product, hidden, fake) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, 1)");
             foreach ($fake_reviews as $review)
             {
                 $pdo_array = array();
@@ -252,6 +257,7 @@ class build_fake_reviews {
             $cont  = $this->lorem_ipsum($faker_obj);
             $ip    = $faker_obj->ipv4;
             $title = $this->random_title($faker_obj);
+            $product = $this->set_rand_product();
 
             $fake_review = array();
             $fake_review['title'] = $title;
@@ -261,12 +267,48 @@ class build_fake_reviews {
             $fake_review['email'] = $email;
             $fake_review['ip']    = $ip;
             $fake_review['cont']  = $cont;
+            $fake_review['prod']  = $product;
 
             $review_array[] = $fake_review;
         }
         $this->created_count = count($review_array);
 
         return $review_array;
+    }
+
+    protected function set_rand_product()
+    {
+        $products = $this->product_array;
+
+        $count = count($products);
+
+        if ($count == 0)
+        {
+            return '';
+        }
+
+        $rand = rand(0, $count-1);
+
+        $selected_product = $products[$rand];
+
+        return $selected_product['product_id'];
+    }
+
+    protected function set_products()
+    {
+        $tmp = array();
+        $product_array =  product_array_set::get_product_array();
+
+        foreach ($product_array as $key=>$value)
+        {
+            $prod = array();
+            $prod['product_id'] = $key;
+            $prod['product_name'] = $value;
+
+            $tmp[] = $prod;
+        }
+
+        return $tmp;
     }
 
     protected function lorem_ipsum(Faker\Generator $faker_obj)
