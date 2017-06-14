@@ -544,12 +544,14 @@ class installer {
     {
         $query = 'CREATE TABLE users (
                     id INT(3) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-                    username VARCHAR(30) NOT NULL,
-                    email VARCHAR(50) NOT NULL,
+                    username VARCHAR(30) NOT NULL UNIQUE ,
+                    email VARCHAR(50) NOT NULL UNIQUE ,
                     hash char(64) DEFAULT NULL,
                     reg_date timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
                     token char(64) DEFAULT NULL,
                     token_exp datetime DEFAULT NULL,
+                    reset_id char(10) DEFAULT  NULL UNIQUE ,
+                    reset_exp datetime DEFAULT NULL,
                     admin tinyint(1) DEFAULT NULL,
                     locked tinyint(1) NOT NULL DEFAULT 0)';
 
@@ -561,9 +563,8 @@ class installer {
     {
         $query = 'CREATE TABLE products (
                     id SMALLINT (5) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-                    product_id VARCHAR(10) NOT NULL,
+                    product_id VARCHAR(10) NOT NULL UNIQUE ,
                     product_name VARCHAR(50) NOT NULL,
-                    review_count SMALLINT(5) DEFAULT 0,
                     create_date timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
                     last_review DATE DEFAULT NULL)';
 
