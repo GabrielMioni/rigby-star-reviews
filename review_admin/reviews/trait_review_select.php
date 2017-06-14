@@ -23,6 +23,7 @@ trait trait_review_select
     {
         $this->push_input_array($this->input_array, 'title', 'title_search');
         $this->push_input_array($this->input_array, 'name',  'name_search');
+//        $this->push_input_array($this->input_array, 'product', 'product_search');
         $this->push_input_array($this->input_array, 'email', 'email_search');
         $this->push_input_array($this->input_array, 'ip',    'ip_search');
 

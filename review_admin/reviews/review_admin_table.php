@@ -102,9 +102,11 @@ class review_admin_table extends abstract_navigate
 
     protected function build_table($review_array, $query_string)
     {
+
         $thead = "  <thead>
                         <tr class='head'>
                             <th id='col_id'>Id</th>
+                            <th id='product'>Product</th>
                             <th id='col_stars'>Stars</th>
                             <th id='col_title'>Title</th>
                             <th id='col_name'>Name</th>
@@ -120,6 +122,7 @@ class review_admin_table extends abstract_navigate
 
         foreach ($review_array as $key => $row) {
             $id     = $row['id'];
+            $prod   = $row['product'];
             $title  = $row['title'];
             $name   = $row['name'];
             $email  = $row['email'];
@@ -153,6 +156,7 @@ class review_admin_table extends abstract_navigate
 
             $row_disp = "<tr class='row_display$odd_check'>
                             <td class='disp_id'><a name='row_$id'>$id</a></td>
+                            <td class='disp_prod'>$prod</td>
                             <td class='disp_stars'>$star_divs</td>
                             <td class='disp_title'>$title</td>
                             <td class='disp_name'>$name</td>
@@ -165,8 +169,11 @@ class review_admin_table extends abstract_navigate
                             </td>
                         </tr>";
 
+            // Used to set <td> colspan in the row_edit row.
+            $td_count = substr_count($row_disp, '</td>');
+
             $row_edit = "<tr class='row_edit$odd_check'>
-                            <td colspan='9'>
+                            <td colspan='$td_count'>
                                 <form action='php/edit_quick_act.php' method='post'>
                                     <input name = 'id' id='id' type='hidden' value='$id'>
                                     <div class='form_left'>
