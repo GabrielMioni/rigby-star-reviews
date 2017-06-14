@@ -250,17 +250,40 @@ class login_act
                 $error_msg .= "Username is required.";
                 break;
             case 4:
-                $error_msg .= "'$this->input_username' is not a valid Username.";
+//                $error_msg .= "'$this->input_username' is not a valid Username.";
+                $error_msg .= 'Either the username or password are incorrect.';
                 break;
             case 5:
-                $error_msg .= "The password entered for '$this->input_username' is incorrect.";
+//                $error_msg .= "The password entered for '$this->input_username' is incorrect.";
+                $error_msg .= 'Either the username or password are incorrect.';
                 break;
             default:
                 $error_msg .= "Bad login. Please try again";
                 break;
         }
-        $_SESSION['login_error'] = $error_msg;
+//        $_SESSION['login_error'] = $error_msg;
+        $this->set_message(false, $error_msg);
         header('Location: ../review_login/');
+    }
+
+    /**
+     * Builds an array with data that's used to set a response message that displays for the user on forgot_password.php
+     * The array is JSON encoded and set as a element at $_SESSION['pswd_reset_result].
+     *
+     * @param $status bool  Sets the first element in the array. False = 0, True = 1. 0 is for displaying 'error' messages,
+     *                      1 is for 'good' messages.
+     * @param $msg string   The message that should be displayed to the user.
+     * @todo This method is copied right out of password_reset_abstract.php Should really refactor a bit.
+     */
+    protected function set_message($status, $msg)
+    {
+        $json_array = array();
+        $json_array[] = $status == true ? 1 : 0;
+        $json_array[] = $msg;
+
+        $json_string = json_encode($json_array);
+
+        $_SESSION['pswd_reset_result'] = $json_string;
     }
     
 }

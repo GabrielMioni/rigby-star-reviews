@@ -1,38 +1,20 @@
 <?php
-
 session_start();
+if (!defined('RIGBY_ROOT'))
+{
+    require_once('../rigby_root.php');
+}
+require_once(RIGBY_ROOT . '/widgets/display_message.php');
 
+$build_display_msg = new display_message('pswd_reset_result');
+$display_msg = $build_display_msg->return_msg_html();
 
-
-$current_year = date('Y', time());
 
 $entered_name = '';
-$login_error  = '';
 
 if (isset($_SESSION['entered_name'])) {
     $entered_name .= $_SESSION['entered_name'];
 }
-if (isset($_SESSION['login_error'])) {
-    $login_error .= $_SESSION['login_error'];
-}
-if (isset($_SESSION['logout_msg'])) {
-    $msg = $_SESSION['logout_msg'];
-    $logout_msg = "<div class='logout'>You have been logged out.</div>";
-} else {
-    $logout_msg = '';
-}
-
-function set_login_error($login_error) {
-    if ($login_error !== '') {
-        $error_div  = "<div id='login_error'>";
-        $error_div .= "<div class='bar'></div>";
-        $error_div .= "<p>".$login_error."</p>";
-        $error_div .= "</div>";
-        
-        echo $error_div;
-    }
-}
-
 
 ?>
 <html>
@@ -46,7 +28,9 @@ function set_login_error($login_error) {
     </head>
     <body>
         <div id='content'>
-            <?php set_login_error($login_error); ?>
+            <?php
+            echo $display_msg;
+            ?>
             <div id="main_login">
                 <form id="rev_login" name="login" action="login_act.php" method="post">
                     <div class='form_row'>
@@ -72,11 +56,7 @@ function set_login_error($login_error) {
                     </div>
                 </form>
             </div>
-            <?php 
-            echo $logout_msg;
-            ?>
-            
+            <div id="forgot_nav"><a href="forgot_password.php">Forgot your password?</a></div>
         </div>
     </body>
-    <?php session_destroy(); ?>
 </html>
