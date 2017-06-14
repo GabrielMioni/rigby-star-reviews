@@ -105,12 +105,29 @@ class histogram
 
     protected function build_histogram(array $review_count_array, $review_totals, $url, NumberFormatter $formatter_obj)
     {
-
+/*
         $rev_fill_5 = $formatter_obj->format($review_count_array[4] / $review_totals);
         $rev_fill_4 = $formatter_obj->format($review_count_array[3] / $review_totals);
         $rev_fill_3 = $formatter_obj->format($review_count_array[2] / $review_totals);
         $rev_fill_2 = $formatter_obj->format($review_count_array[1] / $review_totals);
         $rev_fill_1 = $formatter_obj->format($review_count_array[0] / $review_totals);
+*/
+        $rev_fill_5 = 0;
+        $rev_fill_4 = 0;
+        $rev_fill_3 = 0;
+        $rev_fill_2 = 0;
+        $rev_fill_1 = 0;
+
+        if ($review_totals > 0)
+        {
+            $rev_fill_5 = $formatter_obj->format($review_count_array[4] / $review_totals);
+            $rev_fill_4 = $formatter_obj->format($review_count_array[3] / $review_totals);
+            $rev_fill_3 = $formatter_obj->format($review_count_array[2] / $review_totals);
+            $rev_fill_2 = $formatter_obj->format($review_count_array[1] / $review_totals);
+            $rev_fill_1 = $formatter_obj->format($review_count_array[0] / $review_totals);
+        }
+
+
 
         $url_5 = $url . '?rating=5';
         $url_4 = $url . '?rating=4';
