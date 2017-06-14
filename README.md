@@ -15,6 +15,7 @@ data.
 Rigby uses code from the following libraries:
 - random_compat: [https://github.com/paragonie/random_compat](https://github.com/paragonie/random_compat) - Used for building user tokens for admin login.
 - Faker: [https://github.com/fzaninotto/Faker](https://github.com/fzaninotto/Faker) - Used to generate fake names/email addresses and lorem ipsum text content for fake reviews.
+- PHPMailer: [https://github.com/PHPMailer/PHPMailer](https://github.com/PHPMailer/PHPMailer) - Used to send password reset emails for users that have forgotten their passwords. 
 - Rigby uses a PDO wrapper for MySQL queries. That wrapper comes from an article found at [PHP Delusions](https://phpdelusions.net/pdo/pdo_wrapper), which is a wonderful blog.
 - Rigby is named after the British actor [Terrence Rigby](https://en.wikipedia.org/wiki/Terence_Rigby).
 
