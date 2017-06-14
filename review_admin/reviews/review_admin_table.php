@@ -86,7 +86,12 @@ class review_admin_table extends abstract_navigate
 
         $count = $this->review_select('COUNT(*)', $input_array, $date_inputs, $star_inputs);
 
-        if ($count == false)
+        if (empty($count) || $count === 0)
+        {
+            return 0;
+        }
+
+        if ($count === false)
         {
             $error_msg = "review_admin_table couldn't get review data: ";
             trigger_error($error_msg);
