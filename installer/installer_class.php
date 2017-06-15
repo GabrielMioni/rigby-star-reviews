@@ -392,7 +392,8 @@ class installer {
     {
         $json_txt = "";
 
-        return $this->try_to_write('timestamp.txt', $json_txt);
+//        return $this->try_to_write('timestamp.txt', $json_txt);
+        return $this->try_to_write('timestamp.php', $json_txt);
     }
 
     protected function check_login_attempts($attempts_max, $seconds_to_wait)
@@ -577,6 +578,7 @@ class installer {
             sql_pdo::run($query);
             return true;
         } catch (PDOException $e) {
+            error_log($e->getMessage());
             return $e->getMessage();
         }
     }
