@@ -192,7 +192,7 @@ class admin_bars {
         // Add Dashboard and Reviews options
         $sidebar .= "<li$sel_index><a href='index.php'><span>Dashboard</span></a>$arrow_index</li>"; // Add Dashboard
         $sidebar .= "<li$sel_reviews><a href='reviews.php'><span>Reviews</span></a>$arrow_reviews</li>";
-        $sidebar .= "<li$sel_products><a href='../products.php'><span>Products</span></a>$arrow_products</li>";
+        $sidebar .= "<li$sel_products><a href='products.php'><span>Products</span></a>$arrow_products</li>";
 
         // If the Rigby user is admin, add Users and Settings options.
         if ($admin_priv == TRUE)
