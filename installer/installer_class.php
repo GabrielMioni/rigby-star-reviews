@@ -1,274 +1,248 @@
 <?php
-require_once('../php/sql_pdo/sql_pdo.php');
-require_once('../php/sql_pdo/sql_define.php');
-require_once('../rigby_root.php');
+if (!defined('RIGBY_ROOT'))
+{
+    require_once('../rigby_root.php');
+}
+require_once(RIGBY_ROOT . '/php/sql_pdo/sql_define.php');
+require_once(RIGBY_ROOT . '/php/sql_pdo/sql_pdo.php');
 
 /**
- *
+ * @package     Rigby
+ * @author      Gabriel Mioni <gabriel@gabrielmioni.com>
  */
 
 /**
- * The installer class walks a new Rigby user through installation.
+ * The installer_class is responsible for the following:
  *
- * - Makes sure PHP version > 5
- * - Makes sure sessions are enabled
- * - Makes sure Rigby can use fopen/fwrite in its own directories.
- * - Accepts MySQL credentials. If validated, writes credentials to a define file for use by the sql_pdo class at
- *   php/sql_pdo/sql_pdo.php. Rigby user will be locked out if 3 failed attempts are made in 10 minutes.
- * - Creates users and star_reviews MySql tables.
- * - Prompts the Rigby user to create a Rigby admin account.
- *
- * Tread carefully dear reader for I have a tale.
- *
- * The Rigby user is provided with different screens using a switch calling $_POST['set_action']. The switch returns HTML
- * based on the value of $_POST['set_action']. Functions called during the switch statement are also processing things
- * like validation for user input and returning errors.
- *
- * In some cases a user can't proceed to the next step until their input passes validation. In these cases, they have
- * to be redirected to installer/index.php. To keep them from starting at the beginning, $_SESSION['set_action'] is set
- * with the value for the step they need. The installer::__constructor() checks for this value and if it's set it will
- * use the value of $_SESSION['set_value'] to display HTML.
- *
- * $_SESSION elements are also used to pass error message/previously entered input data. These are always destroyed
- * after processing HTML.
- *
+ * - Check the requirements for Rigby.
+ * - Test the MySQL connection using creds provided by the user.
+ * - Save MySQL creds in /php/sql_pdo/sql_define.php if they're good.
+ * - Build the MySQL tables necessary for Rigby to run.
+ * - Prompt the Rigby user to create their first Rigby admin account.
+ * - Direct the user to the Rigby login page.
  */
+class installer_class
+{
+    /** @var int Flag used by installer_class::set_html() that directs the class to set HTML for each installation step */
+    protected $step = 0;
 
-class installer {
-    protected $pdo_obj;
-
-    protected $step = null;
-
+    /** @var string The HTML for the installation step that needs to be displayed. */
     protected $html;
 
     public function __construct()
     {
-        $this->step = isset($_POST['set_action']) ? $_POST['set_action'] : null;
-
-        if ($this->step == null) {
-            $this->step = isset($_SESSION['set_action']) ? $_SESSION['set_action'] : null;
-            unset($_SESSION['set_action']);
-        }
+        $this->step = $this->set_step();
 
         $this->html = $this->set_html($this->step);
     }
 
     /**
-     * @param $step
-     * @return string
+     * Sets the $step flag that directs the installer to load the necessary HTML.
+     *
+     * If $_SESSION['set_action'] is set it will over rule $_POST['set_action']. This lets the step be set manually
+     * by installer_class::set_step_manually() when there's some issue with form validation or a given step failed.
+     *
+     * @return int The flag representing what step the installer should be on.
+     */
+    protected function set_step()
+    {
+        if (isset($_SESSION['set_action']))
+        {
+            $out = $_SESSION['set_action'];
+            $this->unset_value_from_session('set_action');
+            return $out;
+        }
+        if (isset($_POST['set_action']))
+        {
+            $out = $_POST['set_action'];
+            return $out;
+        }
+    }
+
+    /**
+     * Evaluates $step and sets which method should be called to display HTML.
+     *
+     * @param $step int Set by installer_class:set_step().
+     * @return string HTML that should be displayed.
      */
     protected function set_html($step)
     {
-        $server = $_SERVER['PHP_SELF'];
-        $html = '';
+        $server = htmlspecialchars($_SERVER['PHP_SELF']);
 
         switch ($step)
         {
-            case null:
-                $html = $this->html_starting($server);
+            case 0: // Start screen
+                $html = $this->start_screen($server);
                 break;
-            case 1:
-                $html = $this->html_requirements($server);
+            case 1: // Explain requirements.
+                $html = $this->explain_requirements($server);
                 break;
-            case 2:
-                $html = $this->html_check_php_and_session($server);
+            case 2: // Check requirements.
+                $html = $this->check_requirements($server);
                 break;
-            case 3:
-                $html = $this->html_collect_sql_creds($server);
+            case 3: // Confirm requirements passed. Request SQL creds.
+                $html = $this->request_sql_creds($server);
                 break;
-            case 4:
-                $html = $this->html_validate_sql_creds($server);
+            case 4: // Test PDO - Write sql_define.php
+                $html = $this->write_sql_define($server);
                 break;
-            case 5:
-                $html = $this->html_create_rigby_admin($server);
+            case 5: // Create Rigby MySQL tables.
+                $html = $this->create_rigby_tables($server);
                 break;
-            case 6:
-                $html = $this->html_check_rigby_success($server);
+            case 6: // Create Rigby Admin account.
+                $html = $this->create_rigby_admin($server);
                 break;
-            case 7:
-                header('Location: ../review_login/');
+            case 7: // Congratulate Rigby user.
+                $html = $this->all_done($server);
+                break;
+            case 8:
+                $html = '';
+                $this->go_to_login();
+                break;
+            default:
+                $html = '';
+                $this->go_to_login();
                 break;
         }
+
+        /* Always clean $_SESSION['error'] so it's clean for the next step in the installer. */
+        $this->unset_value_from_session('error');
 
         return $html;
     }
 
     /**
-     * Step null
+     * Step 0. Show the Rigby user the installer intro.
      *
-     * Displays the Rigby Installer introduction.
-     *
-     * @param $server string form action directory (PHP_SELF)
-     * @return string HTML for the introduction screen.
+     * @param $server string $_SERVER['PHP_SELF'] set in installer_class::set_html()
+     * @return string HTML
      */
-    protected function html_starting($server)
+    protected function start_screen($server)
     {
         $html = "<div class='rigby_message good'>
                     <h3>Welcome to Rigby!</h3>
-                    <p>
-                        This installer will walk you through making sure everything is setup and ready to start.
-                    </p>
-                    <p>
-                        Clink 'Start' to get stared!
-                    </p>
+                    <p>This installer will walk you through making sure everything is set up and ready to start.</p>
+                    <p>Clink 'Start' to get stared!</p>
                     <form action='$server' method='post'>
                         <button name='set_action' value='1' type='submit'>Start!</button>
                     </form>
                 </div>";
-        session_destroy();
+
         return $html;
     }
 
     /**
-     * Step 1
+     * Step 1. Displays requirements.
      *
-     * Displays HTML for the requirements screen.
-     *
-     * @param $server string form action directory (PHP_SELF)
-     * @return string HTML for the requirements screen
+     * @param $server $_SERVER['PHP_SELF'] set in installer_class::set_html()
+     * @return string HTML
      */
-    protected function html_requirements($server)
+    protected function explain_requirements($server)
     {
-        $html = "    <div class='rigby_message good'>
-                        <p class='top_p'>Rigby has a few requirements.<p>
-                            <ul>
-                                <li>PHP must be version 5 or higher</li>
-                                <li>PHP must have sessions enabled</li>
-                                <li>You must have a MySQL database with a username and password. Your MySQL user must have write access.</li>
-                          </ul>
-                          <p>The next screen will confirm all those things are ready.</p>
-                        <form action='$server' method='post'>
-                            <button name='set_action' value='2' type='submit'>Continue</button>
-                        </form>
-                      </div>";
+        $html = "<div class='rigby_message good'>
+                    <p class='top_p'>Rigby has a few requirements.<p>
+                        <ul><li>PHP must be version 5 or higher</li><li>PHP must have sessions enabled</li><li>You must have a MySQL database with a username and password. Your MySQL user must have write access.</li></ul>
+                        <p>The next screen will confirm all those things are ready.</p>
+                        <form action='$server' method='post'><button name='set_action' value='2' type='submit'>Continue</button></form>
+                 </div>";
+
         return $html;
     }
 
     /**
-     * Step 2
+     * Step 2. Checks requirements and provides feedback on results.
      *
-     * Checks PHP version and if sessions are enabled. Displays HTML letting the Rigby user know whether they
-     * passed requirements or not.
-     *
-     * @param $server string form action directory (PHP_SELF)
-     * @return string HTML requirements valiation screen.
+     * @param $server $_SERVER['PHP_SELF'] set in installer_class::set_html()
+     * @return string HTML
      */
-    protected function html_check_php_and_session($server)
+    protected function check_requirements($server)
     {
+        /* Run checks to make sure stuff that the installer needs is in place */
         $php_version_ok = $this->check_php_version();
         $sessions_ok    = $this->check_sessions_enabled();
         $write_json_ts  = $this->check_write_json_ts();
 
-        $php_symbol  = $this->set_true_false_symbols($php_version_ok);
-        $sess_symbol = $this->set_true_false_symbols($sessions_ok);
-        $write_symbol = $this->set_true_false_symbols($write_json_ts);
+        $checkmark_html = "<td class='true_td'><i class='fa fa-check' aria-hidden='true'></i></td>";
+        $x_html         = "<td class='false_td'><i class='fa fa-times' aria-hidden='true'></i></td>";
 
+        /* Check validation and set HTML parts accordingly. */
         if ($php_version_ok === true && $sessions_ok === true && $write_json_ts === true)
         {
-            $check_state = 1;
-            $html = '<div class=\'rigby_message good\'>';
+            /* Set check mark symbols for all table rows if validation is passed. */
+            $php_symbol   = $checkmark_html;
+            $sess_symbol  = $checkmark_html;
+            $write_symbol = $checkmark_html;
+
+            /* Set open div element with 'good' class */
+            $div_start = '<div class=\'rigby_message good\'>';
+
+            /* Set button to next step */
+            $end_info = "<form action='$server' method='post'><button name='set_action' value='3' type='submit'>Next</button></form>";
+
         } else {
-            $check_state = 0;
-            $html = '<div class=\'rigby_message bad\'>';
-        }
 
-        switch ($check_state) {
-            case 1:
-                $html .= '<p class="top_p">Looks like everything is good!</p>';
-                break;
-            case 2:
-            default:
-                $html .= '<p>There appears to be a problem.</p>';
-                break;
-        }
+            /* If validation did not pass, evaluate check mark or 'x' for each row. */
+            $php_symbol   = $php_version_ok === true ? $checkmark_html : $x_html;
+            $sess_symbol  = $sessions_ok    === true ? $checkmark_html : $x_html;
+            $write_symbol = $write_json_ts  === true ? $checkmark_html : $x_html;
 
-        $html .= "<table id='installer_check'>
-                        <caption>Requirements</caption>
-                            <tr>
-                                <th>PHP version 5 or greater</th>
-                                $php_symbol
-                             </tr>
-                             <tr>
-                                <th>PHP Sessions are enabled</th>
-                                $sess_symbol
-                             </tr>
-                             <tr>
-                                <th>Rigby Can Write a file</th>
-                                $write_symbol
-                             </tr>
-                    </table>";
+            /* Set open div element with 'bad' class */
+            $div_start = '<div class=\'rigby_message bad\'>';
 
-        if ($check_state === 1)
-        {
-            $html .= "<form action='$server' method='post'>
-                           <button name='set_action' value='3' type='submit'>Next</button>
-                      </form>";
-        } else {
-            $html .= '<ul>';
+            /* Set error feedback in a <ul> element */
+            $end_info = '<ul>';
+
             if ($php_version_ok === false)
             {
-                $html .= '<li>It looks like your PHP needs to be updated.</li>';
+                $end_info .= '<li>It looks like your PHP needs to be updated.</li>';
             }
             if ($sessions_ok === false)
             {
-                $html .= '<li>Rigby needs sessions to be enabled. It\'s a little weird that they aren\'t since they\'re usually enabled by default.</li>';
+                $end_info .= '<li>Rigby needs sessions to be enabled.</li>';
             }
             if ($write_json_ts === false)
             {
-                $html .= '<li>Rigby doesn\'t appear to have write access to its own directory.</li>';
+                $end_info .= '<li>Rigby couldn\'t write to it\'s own directory.</li>';
             }
-            $html .= 'Check with your web host. They can probably help you.';
-            $html .= '</ul>';
+            $end_info .= '</ul>';
         }
 
-        $html .= '</div>'; // close .rigby_message element.
+        /* Put the HTML parts together. */
+        $html = '';
 
-        // Destroy the session set while testing whether sessions are enabled.
-        $this->unset_session_message('test_msg');
+        $html .= $div_start; // Open the div element.
+        $html .= "<table id='installer_check'><caption>Requirements</caption><tr><th>PHP version 5 or greater</th>$php_symbol</tr><tr><th>PHP Sessions are enabled</th>$sess_symbol</tr><tr><th>Rigby Can Write a file</th>$write_symbol</tr></table>";
+        $html .= $end_info;
+
+        $html .= '</div>'; // close the div element.
 
         return $html;
     }
 
     /**
-     * Returns a check mark if $results == true and a 'x' if $results == false.
+     * Step 3. Collect MySQL creds and test them. Creds are tested in Step 4. If validation fails, user is sent back
+     * to Step 3 and an error is displayed.
      *
-     * @param $results bool
-     * @return string Font-Awesome HTML.
+     * @param $server $_SERVER['PHP_SELF'] set in installer_class::set_html()
+     * @return string HTML
      */
-    protected function set_true_false_symbols($results)
+    protected function request_sql_creds($server)
     {
-        $checkmark_html = "<td class='true_td'><i class='fa fa-check' aria-hidden='true'></i></td>";
-        $x_html         = "<td class='false_td'><i class='fa fa-times' aria-hidden='true'></i></td>";
+        /* Set any values that should be set in the form inputs if they're present. */
+        $db_value = $this->set_value_from_session('sql_db');
+        $un_value = $this->set_value_from_session('sql_un');
+        $pw_value = $this->set_value_from_session('sql_pw');
+        $error    = $this->set_value_from_session('error');
 
-        if ($results) {
-            return $checkmark_html;
+        /* Check if error is set and set the <div> open with the appropriate good/bad class. */
+        if (trim($error === ''))
+        {
+            $html = "<div class='rigby_message good'>";
         } else {
-            return $x_html;
-        }
-    }
-
-    /**
-     * Step 3
-     *
-     * @param $server
-     * @return string
-     */
-    protected function html_collect_sql_creds($server)
-    {
-        $html = '';
-        $db_value = $this->set_value_from_session('3_sql_db');
-        $un_value = $this->set_value_from_session('3_sql_un');
-        $pw_value = $this->set_value_from_session('3_sql_pw');
-
-        if (isset($_SESSION['3_sql_error'])) {
-            $error = $_SESSION['3_sql_error'];
-            $html .= '<div class=\'rigby_message bad\'>';
-        } else {
-            $error = '';
-            $html .= '<div class=\'rigby_message good\'>';
+            $html = "<div class='rigby_message bad'>";
         }
 
-        $html .= "  <p class='top_p'>Rigby requires access to a MySQL server.</p>
+        $html .= "<p class='top_p'>Rigby requires access to a MySQL server.</p>
                     <div class='error'><p>$error</p></div>
                         <form action='$server' method='post'>
                             <div class='inputs'>
@@ -289,91 +263,81 @@ class installer {
                         </form>
                     </div>";
 
-        $this->unset_session_message('3_sql_error');
-        $this->unset_session_message('3_sql_db');
-        $this->unset_session_message('3_sql_un');
-        $this->unset_session_message('3_sql_pw');
+        /* Clean $_SESSION variables for Step 4. */
+        $this->unset_value_from_session('sql_db');
+        $this->unset_value_from_session('sql_un');
+        $this->unset_value_from_session('sql_pw');
+        $this->unset_value_from_session('error');
 
         return $html;
     }
 
-
     /**
-     * Step 4
+     * Step 4. Evaluate $_POST data from Step 3, tests the MySQL creds and if the creds are good, write them to
+     * /php/sql_pdo/sql_define.php.
      *
-     * @param $server
-     * @return string
+     * If any values are empty or if the MySQL connection fails, send the user back to Step 3.
+     *
+     * @param $server $_SERVER['PHP_SELF'] set in installer_class::set_html()
+     * @return string HTML
      */
-    protected function html_validate_sql_creds($server)
+    protected function write_sql_define($server)
     {
-        $database = htmlspecialchars(trim($_POST['sql_db']));
-        $username = htmlspecialchars(trim($_POST['sql_un']));
-        $password = htmlspecialchars(trim($_POST['sql_pw']));
+        $database = $this->set_value_from_post('sql_db');
+        $username = $this->set_value_from_post('sql_un');
+        $password = $this->set_value_from_post('sql_pw');
 
-        // Check how many times the user has tried to log in unsuccessfully within the last ten minutes.
-        $check_login_attempts = $this->check_login_attempts(3, 60);
+        $step_back = 3;
 
-        if ($check_login_attempts == false) {
-            $_SESSION['set_action'] = 3;
-            $_SESSION['3_sql_error'] = 'You have been locked out. Please try again in ten minutes.';
-            $_SESSION['3_sql_db'] = $database;
-            $_SESSION['3_sql_un'] = $username;
-            $_SESSION['3_sql_pw'] = $password;
-            header('Location: ' . $server);
-            exit;
-        }
-
-        $pdo_works = $this->check_pdo_connect($database, $username, $password);
-
-        $write_state = 0;
-
-        if ($pdo_works == true)
+        /* Make sure post values aren't empty. */
+        if ($database === '' || $username === '' || $password === '')
         {
-            $write_define = $this->try_to_write_sql_define($database, $username, $password);
+            $_SESSION['sql_db'] = $database;
+            $_SESSION['sql_un'] = $username;
+            $_SESSION['sql_pw'] = $password;
+            $_SESSION['error']  = 'Fields cannot be empty!';
 
-            $write_secret_key = $this->try_to_write_secret_key();
-
-            if ($write_define === true && $write_secret_key === true) {
-                $write_state = 1;
-            }
+            $this->set_step_manually($step_back, $server);
         }
 
-        if ($pdo_works == false || $write_state == 0)
+        /* Test the PDO connection with the post values provided. */
+        $check_pdo = $this->check_pdo_connect($database, $username, $password);
+
+        if ($check_pdo === false)
         {
-            if ($write_state == 0)
-            {
-                $_SESSION['3_sql_error'] = "Rigby connected with MySQL using the credentials provided, but it could not save those credentials because the directory isn't writable.";
-            }
-            if ($pdo_works == false)
-            {
-                $_SESSION['3_sql_error'] = "Rigby could not connect with MySQL. Please make sure the credentials you've provided are correct. $check_login_attempts";
-            }
-            $_SESSION['set_action'] = 3;
-            $_SESSION['3_sql_db'] = $database;
-            $_SESSION['3_sql_un'] = $username;
-            $_SESSION['3_sql_pw'] = $password;
-            header('Location: ' . $server);
-            exit;
-        } else {
+            $_SESSION['sql_db'] = $database;
+            $_SESSION['sql_un'] = $username;
+            $_SESSION['sql_pw'] = $password;
+            $_SESSION['error']  = 'Could not connect with MySQL using the credentials you\'ve supplied.';
 
-            $sql_table_review = $this->create_review_table();
-            $sql_table_users = $this->create_users_table();
-            $sql_table_products = $this->create_products_table();
-
-            if ($sql_table_review !== true || $sql_table_users !== true || $sql_table_products !== true) {
-                $_SESSION['3_sql_error'] = "Rigby connected with MySQL, but couldn't create the necessary tables on the MySQL database. Maybe your user privileges don't include write access.";
-                $_SESSION['3_sql_db'] = $database;
-                $_SESSION['3_sql_un'] = $username;
-                $_SESSION['3_sql_pw'] = $password;
-                $_SESSION['set_action'] = 3;
-                header('Location: ' . $server);
-                exit;
-            }
+            $this->set_step_manually($step_back, $server);
         }
 
+        /* Try to write to /php/sql_pdo/sql_define.php */
+        $define_text = "<?php
+        define('DB_HOST', 'localhost');
+        define('DB_NAME', '$database');
+        define('DB_USER', '$username');
+        define('DB_PASS', '$password');
+        define('DB_CHAR', 'utf8');        
+        ?>";
+
+        $write_sql_define = $this->try_to_write('../php/sql_pdo/sql_define.php', $define_text);
+
+        if ($write_sql_define === false)
+        {
+            $_SESSION['sql_db'] = $database;
+            $_SESSION['sql_un'] = $username;
+            $_SESSION['sql_pw'] = $password;
+            $_SESSION['error']  = 'Rigby connected with MySQL but could not save your credentials.';
+
+            $this->set_step_manually($step_back, $server);
+        }
+
+        /* If all validation / checks passed, display success HTML*/
         $html = "  <div class='rigby_message good'>
-                        <p>Rigby connected with MySQL and created the tables it needs!</p>
-                        <p>Next you will need to create your first administrator account so you can log into Rigby. Click Next to continue.</p>
+                        <p>Rigby connected with MySQL!</p>
+                        <p>Next Rigby will create some MySQL tables it needs to work properly.</p>
                         <div class='error'><p></p></div>
                         <form action='$server' method='post'>
                             <button name='set_action' value='5' type='submit'>Next</button>
@@ -384,334 +348,147 @@ class installer {
     }
 
     /**
-     * Here we're just testing to see if it's possible to write to json_time_stamp.
+     * Step 5. Try to create the MySQL tables necessary to run Rigby. If table creation fails, returns the user
+     * back to Step 5 (same step) and displays an error.
      *
-     * @return bool
+     * @param $server $_SERVER['PHP_SELF'] set in installer_class::set_html()
+     * @return string HTML
      */
-    protected function check_write_json_ts()
+    protected function create_rigby_tables($server)
     {
-        $json_txt = "";
-
-//        return $this->try_to_write('timestamp.txt', $json_txt);
-        return $this->try_to_write('timestamp.php', $json_txt);
-    }
-
-    protected function check_login_attempts($attempts_max, $seconds_to_wait)
-    {
-        // Read file as string
-
-        $stream = fopen("timestamp.php","r");
-        $timestamp_content = stream_get_contents($stream);
-        fclose($stream);
-
-        if ($timestamp_content == '')
+        if (isset($_SESSION['error']))
         {
-            $timestamp_array = array();
-            $timestamp_array['timestamp'] = date('Y-m-d H:i:s', time() + $seconds_to_wait);
-            $timestamp_array['attempts'] = 1;
-
-            $json_encoded = json_encode($timestamp_array);
-
-            $this->try_to_write('timestamp.php', $json_encoded);
-        } else {
-            // Convert the json data to an array
-            $decoded = json_decode($timestamp_content, true);
-
-            // Get values for Timestamp and Attempts
-            $db_timestamp = $decoded['timestamp'];
-            $db_attempts  = $decoded['attempts'];
-
-            // Set values for evaluation
-            $unix_ts      = strtotime($db_timestamp);
-            $new_attempts = $db_attempts +1;
-            $current_time = time();
-
-            // Evaluate
-            $current_greater_than_attempt = $current_time > $unix_ts;
-            $attempts_greater_than_max = $new_attempts > $attempts_max;
-
-            // Process writing state and response.
-            $write_state = null;
-
-            if ($attempts_greater_than_max == true)
-            {
-                if ($current_greater_than_attempt == false)
-                {
-                    // False
-                    $write_state = 1;
-                    $response = false;
-                } else {
-                    // True
-                    $write_state = 0;
-                    $response = 1;
-                }
-            } else {
-                // True
-                $write_state = 1;
-                $response = 1;
-            }
-
-            $timestamp_array = array();
-            $timestamp_array['timestamp'] = date('Y-m-d H:i:s', time() + $seconds_to_wait);
-
-            switch ($write_state) {
-                case 0:
-                    $timestamp_array['attempts']  = 1;
-                    break;
-                case 1:
-                    $timestamp_array['attempts']  = $new_attempts;
-                    break;
-            }
-
-            $write_text = json_encode($timestamp_array);
-            $this->try_to_write('timestamp.php', $write_text);
-
-            switch ($response) {
-                case false:
-                    return false;
-                default:
-                    if ($new_attempts > $attempts_max) {
-                        $new_attempts = 1;
-                    }
-                    $attempts_left_msg = "Attempts [$new_attempts/$attempts_max] left.";
-                    return $attempts_left_msg;
-            }
-        }
-    }
-
-
-
-
-    protected function try_to_write_sql_define($database, $username, $password)
-    {
-        $define_text = "<?php
-        define('DB_HOST', 'localhost');
-        define('DB_NAME', '$database');
-        define('DB_USER', '$username');
-        define('DB_PASS', '$password');
-        define('DB_CHAR', 'utf8');        
-        ?>";
-
-        return $this->try_to_write('../php/sql_pdo/sql_define.php', $define_text);
-    }
-
-    protected function try_to_write_secret_key()
-    {
-        $random_key = bin2hex(password_hash(32, MCRYPT_DEV_URANDOM));
-
-        $secret_key_text = "<?php
-        define(\"SECRET_KEY\", \"$random_key\");";
-
-        return $this->try_to_write('../review_login/define.php', $secret_key_text);
-    }
-
-    protected function try_to_write($file, $text, $allow_write = false)
-    {
-        if (is_writable($file))
-        {
-            $fp = fopen($file, 'wb');
-            fwrite($fp, $text);
-            fclose($fp);
-            if ($allow_write == false) {
-                chmod($file, 0666);
-            }
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    protected function create_review_table()
-    {
-        $query = 'CREATE TABLE star_reviews (
-                    id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-                    title VARCHAR(60) NOT NULL,
-                    name VARCHAR(30) NOT NULL,
-                    email VARCHAR(50) NOT NULL,
-                    cont VARCHAR(1000) NOT NULL,
-                    ip VARCHAR(32) NOT NULL,
-                    product VARCHAR (10) DEFAULT 0,
-                    hidden int(1) DEFAULT NULL,
-                    fake tinyint(1) DEFAULT NULL,
-                    date timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                    stars tinyint(1),
-                    reply VARCHAR(1000) DEFAULT NULL)';
-
-        $create = $this->create_table($query);
-        return $create;
-    }
-
-    protected function create_users_table()
-    {
-        $query = 'CREATE TABLE users (
-                    id INT(3) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-                    username VARCHAR(30) NOT NULL UNIQUE ,
-                    email VARCHAR(50) NOT NULL UNIQUE ,
-                    hash char(64) DEFAULT NULL,
-                    reg_date timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                    token char(64) DEFAULT NULL,
-                    token_exp datetime DEFAULT NULL,
-                    reset_id char(10) DEFAULT  NULL UNIQUE ,
-                    reset_exp datetime DEFAULT NULL,
-                    admin tinyint(1) DEFAULT NULL,
-                    locked tinyint(1) NOT NULL DEFAULT 0)';
-
-        $create = $this->create_table($query);
-        return $create;
-    }
-
-    protected function create_products_table()
-    {
-        $query = 'CREATE TABLE products (
-                    id SMALLINT (5) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-                    product_id VARCHAR(10) NOT NULL UNIQUE ,
-                    product_name VARCHAR(50) NOT NULL,
-                    create_date timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                    last_review DATE DEFAULT NULL)';
-
-        $create = $this->create_table($query);
-        return $create;
-    }
-
-    protected function create_table($query) {
-        try {
-            sql_pdo::run($query);
-            return true;
-        } catch (PDOException $e) {
-            error_log($e->getMessage());
-            return $e->getMessage();
-        }
-    }
-
-
-    /**
-     * Step 5
-     *
-     * @param $server
-     * @return string
-     */
-    protected function html_create_rigby_admin($server)
-    {
-        $pseudo_ajax_reply = $this->set_value_from_session('pseudo_ajax_reply');
-
-        $error_name  = $this->set_value_from_session('6_user_error_name');
-        $error_email = $this->set_value_from_session('6_user_error_email');
-        $error_pass  = $this->set_value_from_session('6_user_error_password');
-        $error_conf  = $this->set_value_from_session('6_user_error_confirm');
-
-        $user_val  = $this->set_value_from_session('6_val_user');
-        $email_val = $this->set_value_from_session('6_val_email');
-        $pass_val  = $this->set_value_from_session('6_val_pass');
-        $conf_val  = $this->set_value_from_session('6_val_conf');
-
-
-        if ($pseudo_ajax_reply !== '')
-        {
-            $error_array = array();
-            $error_array[] = $error_name;
-            $error_array[] = $error_email;
-            $error_array[] = $error_pass;
-            $error_array[] = $error_conf;
-
-            $error_count = 0;
-
-            $error_display = '<ul class=\'error\'>';
-            foreach ($error_array as $error_li)
-            {
-                if ($error_li !== '')
-                {
-                    $error_display .= "<li>$error_li</li>";
-                    ++$error_count;
-                }
-            }
-            $error_display .= '</ul>';
-
-            $html  = "<div class='rigby_message bad '>";
-            if ($error_count > 1) {
-                $html .= '<p>It looks like there were some problems:</p>';
-            } else {
-                $html .= '<p>Rigby needs you to make a corrections.</li>';
-            }
-            $html .= $error_display;
-
-        } else {
-            $html = "<div class='rigby_message good '>";
-        }
-
-        $html .= "      <p>Below enter your username, email address and enter a password. You will use these credentials to log into Rigby. All fields must be entered.</p>
+            $html = "<div class='rigby_message bad'>
+                        <p>Rigby was unable to create the MySQL tables necessary to work properly.</p>
+                        <p>Click 'Next' to try again. If the problem persists, make sure the MySQL credentials you've 
+                           provided to Rigby have write access.</p>
                         <div class='error'><p></p></div>
                         <form action='$server' method='post'>
-                            <div class='inputs'>
-                                <div class='form_row'>
-                                    <label for='new_name'>Username: </label>
-                                    <input name='new_name' type='text' value='$user_val'>
-                                </div>
-                                <div class='form_row'>
-                                    <label for='new_email'>Email: </label>
-                                    <input name='new_email' type='text' value='$email_val'>
-                                </div>
-                                <div class='form_row'>
-                                    <label for='pswd_set'>Password: </label>
-                                    <input name='pswd_set' type='password' value='$pass_val'>
-                                </div>
-                                <div class='form_row'>
-                                    <label for='pswd_con'>Confirm: </label>
-                                    <input name='pswd_con' type='password' value='$conf_val'>
-                                </div>
-                                <input type='hidden' name='priv' value='1'>
-                            </div>
+                            <button name='set_action' value='5' type='submit'>Next</button>
+                        </form>
+                    </div>";
+
+            $this->unset_value_from_session('error');
+            return $html;
+        }
+
+        $table_reviews  = $this->table_create_reviews();
+        $table_users    = $this->table_create_users();
+        $table_products = $this->table_create_products();
+
+        if ($table_reviews === false || $table_users === false || $table_products === false)
+        {
+            $_SESSION['error'] = true;
+            $this->set_step_manually(5, $server);
+            exit;
+        }
+
+        $html = "<div class='rigby_message good'>
+                        <p>Rigby successfully created the tables it needs to work properly!</p>
+                        <p>Next Rigby will ask you to create your first Rigby admin account.</p>
+                        <div class='error'><p></p></div>
+                        <form action='$server' method='post'>
                             <button name='set_action' value='6' type='submit'>Next</button>
                         </form>
                     </div>";
 
-        $this->unset_session_message('pseudo_ajax_reply');
-        $this->unset_session_message('6_user_error_name');
-        $this->unset_session_message('6_user_error_email');
-        $this->unset_session_message('6_user_error_password');
-        $this->unset_session_message('6_user_error_confirm');
+        return $html;
 
-        $this->unset_session_message('6_val_user');
-        $this->unset_session_message('6_val_email');
-        $this->unset_session_message('6_val_pass');
-        $this->unset_session_message('6_val_conf');
+    }
+
+    /**
+     * Step 6. Prompt the user to create an Admin account that's used to log into Rigby Admin. Validation is performed
+     * in Step 7. If validation fails, user is sent back to Step 6 and shown errors.
+     *
+     * @param $server $_SERVER['PHP_SELF'] set in installer_class::set_html()
+     * @return string HTML
+     */
+    protected function create_rigby_admin($server)
+    {
+        $error    = $this->set_value_from_session('error');
+        $username = $this->set_value_from_session('rigby_un');
+        $email    = $this->set_value_from_session('rigby_email');
+        $password = $this->set_value_from_session('rigby_pass');
+        $confirm  = $this->set_value_from_session('rigby_conf');
+
+        switch (trim($error))
+        {
+            case '':
+                $html  = "<div class='rigby_message good '>";
+                break;
+            default:
+                $html  = "<div class='rigby_message bad '>";
+                break;
+        }
+
+        $html .= "      <p>Below enter your username, email address and enter a password. You will use these credentials to log into Rigby. All fields must be entered.</p>
+                        <div class='error'>$error</div>
+                        <form action='$server' method='post'>
+                            <div class='inputs'>
+                                <div class='form_row'>
+                                    <label for='new_name'>Username: </label>
+                                    <input name='new_name' type='text' value='$username'>
+                                </div>
+                                <div class='form_row'>
+                                    <label for='new_email'>Email: </label>
+                                    <input name='new_email' type='text' value='$email'>
+                                </div>
+                                <div class='form_row'>
+                                    <label for='pswd_set'>Password: </label>
+                                    <input name='pswd_set' type='password' value='$password'>
+                                </div>
+                                <div class='form_row'>
+                                    <label for='pswd_con'>Confirm: </label>
+                                    <input name='pswd_con' type='password' value='$confirm'>
+                                </div>
+                                <input type='hidden' name='priv' value='1'>
+                            </div>
+                            <button name='set_action' value='7' type='submit'>Next</button>
+                        </form>
+                    </div>";
+
+        $this->unset_value_from_session('error');
+        $this->unset_value_from_session('rigby_un');
+        $this->unset_value_from_session('rigby_email');
+        $this->unset_value_from_session('rigby_pass');
+        $this->unset_value_from_session('rigby_conf');
 
         return $html;
     }
 
     /**
-     * Step 6
+     * Step 7
      *
-     * @param $server
-     * @return string
+     * @param $server $_SERVER['PHP_SELF'] set in installer_class::set_html()
+     * @return string HTML
      */
-    protected function html_check_rigby_success($server)
+    protected function all_done($server)
     {
         require_once('../review_admin/php/add_user.php');
 
+        /* The add_user class picks up the $_POST required to create a user. */
         $add_user = new add_user(true);
 
-        // There's no actual Ajax here, but we'll use the json_encoded response for feedback.
-        $pseudo_ajax_reply = $add_user->get_ajax_reply();
+        /* Get result from add_user class. */
+        $psuedo_ajax_reply = $add_user->get_ajax_reply();
 
-        if ($pseudo_ajax_reply !== 1)
+        /* If the result is not 1, no user was created. Set errors. */
+        if ($psuedo_ajax_reply !== 1)
         {
-            $error_array = json_decode($pseudo_ajax_reply, true);
+            $json_decode_error_array = json_decode($psuedo_ajax_reply, true);
 
-            foreach ($error_array as $key => $error_msg)
+            $error  = '<p>Rigby was unable to create an Admin account</p>';
+            $error .= '<ul>';
+
+            foreach ($json_decode_error_array as $value)
             {
-                $session_name = '6_user_error_' . $key;
-                $_SESSION[$session_name] = $error_msg;
+                $error .= "<li>$value</li>";
             }
+            $error .= '</ul>';
 
-            $_SESSION['6_val_user']  = htmlspecialchars(trim($_POST['new_name']));
-            $_SESSION['6_val_email'] = htmlspecialchars(trim($_POST['new_email']));
-            $_SESSION['6_val_pass']  = htmlspecialchars(trim($_POST['pswd_set']));
-            $_SESSION['6_val_conf']  = htmlspecialchars(trim($_POST['pswd_con']));
+            $_SESSION['error'] = $error;
 
-            $_SESSION['set_action'] = 5;
-            $_SESSION['pseudo_ajax_reply'] = 1;
-//            header('Location: ' . $server);
-            exit;
+            $this->set_step_manually(6, $server);
         }
 
         $html = "<div class='rigby_message good'>
@@ -720,44 +497,25 @@ class installer {
                         <p>Click the button below to go to the admin login page.</p>
                         <div class='error'><p></p></div>
                         <form action='$server' method='post'>
-                            <button name='set_action' value='7' type='submit'>Go to login!</button>
+                            <button name='set_action' value='8' type='submit'>Go to login!</button>
                         </form>
                     </div>";
 
         return $html;
-
     }
 
-    protected function check_redirect()
+    /**
+     * Step 8. Take the user to the Admin page so they can login.
+     * @return void
+     */
+    protected function go_to_login()
     {
-        if (isset($_SESSION['set_action'])) {
-            $_POST['set_action'] = $_SESSION['set_action'];
-            unset($_SESSION['set_action']);
-        }
+        header('Location: ../review_login/');
     }
 
-    protected function set_value_from_session($session_name)
-    {
-        if (isset($_SESSION[$session_name]))
-        {
-            return htmlspecialchars($_SESSION[$session_name]);
-        } else {
-            return '';
-        }
-    }
-
-    protected function unset_session_message($session_name)
-    {
-        if (isset($_SESSION[$session_name])) {
-            unset($_SESSION[$session_name]);
-        }
-    }
-
-    /* ***************************************
-     * Pre-Installation
-     * - PHP must be at least 5
-     * - Sessions must be enabled.
-     * ***************************************/
+    /* ********************************************************
+     *  - Checks used for installer_class::check_requirements()
+     * ********************************************************/
 
     /**
      * Checks if the version of PHP on the server is at least 5.
@@ -788,15 +546,26 @@ class installer {
     }
 
     /**
-     * Rigby needs a valid MySQL database, username and password. This tests
-     * whether the credentials provided will connect.
+     * Here we're just testing to see if it's possible to write to json_time_stamp.
      *
-     * Sets installer_class::$pdo_obj with a PDO object using the provided creds if they're valid.
-     *
-     * @param $db_name string The name of the MySQL database.
-     * @param $db_user string The name of the SQL user.
-     * @param $db_pass string The password for $db_user
-     * @return bool Returns True if creds are valid, else returns False.
+     * @return bool
+     */
+    protected function check_write_json_ts()
+    {
+        $json_txt = "";
+
+        return $this->try_to_write('timestamp.php', $json_txt);
+    }
+
+    /* ********************************************************
+     *  - Checks used for installer_class::write_sql_define()
+     * ********************************************************/
+
+    /**
+     * @param $db_name string
+     * @param $db_user string
+     * @param $db_pass string
+     * @return bool If PDO was successful, return true. Else false.
      */
     protected function check_pdo_connect($db_name, $db_user, $db_pass)
     {
@@ -810,80 +579,211 @@ class installer {
 
         try {
             new PDO($dsn, $db_user, $db_pass, $opt);
+            return true;
         } catch (PDOException $e) {
             return false;
         }
-        // Return true if no exception is caught.
-        return true;
+
     }
 
     /**
-     * Checks to make sure $pdo_obj is an instance of PDO. If not, return false. Else,
-     * check if the Rigby star_review table exists by calling installer_class::query_rigby_table().
+     * Starts and resets the JSON encdoed data on timestamp.php
      *
-     * @param $pdo_obj PDO|null If check_pdo_connect() successfully created a PDO object,
-     * @uses installer::query_rigby_table()
-     * @return bool If Rigby star_review table exists, returns True. Else if either $pdo_obj isn't
-     * an instance of PDO or the table doesn't exist, return false.
+     * @param $max_attempts
+     * @param $seconds_to_add
+     * @return string
      */
-    protected function check_rigby_table_exists($pdo_obj)
+    protected function set_new_timestamp_data($max_attempts, $seconds_to_add)
     {
-        if($pdo_obj instanceof PDO) {
+        $timestamp_array = array();
+        $timestamp_array['timestamp'] = date('Y-m-d H:i:s', time() + $seconds_to_add);
+        $timestamp_array['attempts'] = 1;
 
-            $check_for_table = $this->query_rigby_table($pdo_obj);
-            return $check_for_table;
-        } else {
+        $json_encoded = json_encode($timestamp_array);
+
+        $this->try_to_write('timestamp.php', $json_encoded);
+
+        $result[] = 1;
+        $result[] = "Login failed. Attempts 1 of $max_attempts.";
+        return json_encode($result);
+    }
+
+    /* *******************************************************************************
+     *  - MySQL Table Creation methods used in installer_class::create_rigby_tables()
+     * *******************************************************************************/
+
+    /**
+     * @return bool True if table was created. Else false.
+     */
+    protected function table_create_reviews()
+    {
+        $query = 'CREATE TABLE star_reviews (
+                    id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+                    title VARCHAR(60) NOT NULL,
+                    name VARCHAR(30) NOT NULL,
+                    email VARCHAR(50) NOT NULL,
+                    cont VARCHAR(1000) NOT NULL,
+                    ip VARCHAR(32) NOT NULL,
+                    product VARCHAR (10) DEFAULT 0,
+                    hidden int(1) DEFAULT NULL,
+                    fake tinyint(1) DEFAULT NULL,
+                    date timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    stars tinyint(1),
+                    reply VARCHAR(1000) DEFAULT NULL)';
+
+        $create = $this->table_create($query);
+        return $create;
+    }
+
+    /**
+     * @return bool True if table was created. Else false.
+     */
+    protected function table_create_users()
+    {
+        $query = 'CREATE TABLE users (
+                    id INT(3) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+                    username VARCHAR(30) NOT NULL UNIQUE ,
+                    email VARCHAR(50) NOT NULL UNIQUE ,
+                    hash char(64) DEFAULT NULL,
+                    reg_date timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    token char(64) DEFAULT NULL,
+                    token_exp datetime DEFAULT NULL,
+                    reset_id char(10) DEFAULT  NULL UNIQUE ,
+                    reset_exp datetime DEFAULT NULL,
+                    admin tinyint(1) DEFAULT NULL,
+                    locked tinyint(1) NOT NULL DEFAULT 0)';
+
+        $create = $this->table_create($query);
+        return $create;
+    }
+
+    /**
+     * @return bool True if table was created. Else false.
+     */
+    protected function table_create_products()
+    {
+        $query = 'CREATE TABLE products (
+                    id SMALLINT (5) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+                    product_id VARCHAR(10) NOT NULL UNIQUE ,
+                    product_name VARCHAR(50) NOT NULL,
+                    create_date timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    last_review DATE DEFAULT NULL)';
+
+        $create = $this->table_create($query);
+        return $create;
+    }
+
+    /**
+     * @param $query string The table creation query being executed.
+     * @return bool True if PDO was successful. Else false.
+     */
+    protected function table_create($query)
+    {
+        try {
+            sql_pdo::run($query);
+            return true;
+        } catch (PDOException $e) {
+            error_log($e->getMessage());
             return false;
         }
     }
 
-    /**
-     * Checks to see if Rigby star_review table exists.
-     *
-     * @param PDO $pdo_obj Created by installer::check_pdo_connect()
-     * @return bool If table exists return true. Else return false.
-     */
-    protected function query_rigby_table(PDO $pdo_obj)
-    {
-        $out = false;
+    /* ********************************************************
+     *  - General methods.
+     * ********************************************************/
 
-        try {
-            $query = "SELECT 1 FROM star_reviews LIMIT 1";
-            $run_check = $pdo_obj->query($query);
-            $results = $run_check->fetchColumn();
-            if ($results)
+    /**
+     * @param $file string The file that should be written too.
+     * @param $text string The text that needs to be added.
+     * @param bool $set_chmod If true, sets chmod to be un-writable after the
+     * @return bool If the file was written too return true. Else, false.
+     */
+    protected function try_to_write($file, $text, $set_chmod = false)
+    {
+        if (is_writable($file))
+        {
+            $fp = fopen($file, 'wb');
+            $fwrite = fwrite($fp, $text);
+            fclose($fp);
+
+            if ($set_chmod === true)
             {
-                $out = true;
+                chmod($file, 0666);
             }
 
-        } catch(PDOException $e) {
-            $out = false;
+            if ($fwrite !== false) {
+                return true;
+            }
         }
-        return $out;
 
+        return false;
     }
 
     /**
-     * This is just for Gabriel and he'll delete this when everything is nice.
+     * Returns value of post variables.
      *
-     * @param $bool
-     * @return string
+     * @param $post_index string The post index for the post variable being looked for.
+     * @return string If $_POST[$post_index] is set, return variable value. Else return ''.
      */
-    protected function show_bool($bool)
+    protected function set_value_from_post($post_index)
     {
-        switch ($bool)
+        if (isset($_POST[$post_index]))
         {
-            case true:
-                return "True";
-            case false:
-                return "False";
-            default:
-                return "False";
+            return htmlspecialchars(trim($_POST[$post_index]));
+        } else {
+            return '';
         }
     }
 
+    /**
+     * Returns value of session variables.
+     *
+     * @param $session_index string The session index being requested.
+     * @return string If $_SESSION[$session_index] is present, returns the value.
+     */
+    protected function set_value_from_session($session_index)
+    {
+        if (isset($_SESSION[$session_index]))
+        {
+            return htmlspecialchars($_SESSION[$session_index]);
+        } else {
+            return '';
+        }
+    }
+
+    /**
+     * Destroys sessions variables at $_SESSION[$session_index].
+     *
+     * @param $session_index string The session index for the session element that needs destroying.
+     */
+    protected function unset_value_from_session($session_index)
+    {
+        if (isset($_SESSION[$session_index]))
+        {
+            unset($_SESSION[$session_index]);
+        }
+    }
+
+    /**
+     * Used to direct the user to a specific step in the installation process. Used when there are form
+     * validation issues or a given step failed.
+     *
+     * @param $step int The step the user is being sent to. Evaluated by installer_class::set_step()
+     * @param $server string The page the user is being directed to.
+     */
+    protected function set_step_manually($step, $server)
+    {
+        $_SESSION['set_action'] = $step;
+        header('Location: ' . $server);
+        exit;
+    }
+
+    /**
+     * @return string The HTML that's been set in installer_class::set_html().
+     */
     public function return_html()
     {
         return $this->html;
     }
+
 }
