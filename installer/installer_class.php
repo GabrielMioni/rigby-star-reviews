@@ -160,13 +160,16 @@ class installer_class
         /* Run checks to make sure stuff that the installer needs is in place */
         $php_version_ok = $this->check_php_version();
         $sessions_ok    = $this->check_sessions_enabled();
-        $write_json_ts  = $this->check_write_json_ts();
+        $write_ts       = $this->check_write_json_ts();
+        $write_key      = $this->try_to_write_secret_key();
+
+        $write = ($write_ts === true && $write_key === true);
 
         $checkmark_html = "<td class='true_td'><i class='fa fa-check' aria-hidden='true'></i></td>";
         $x_html         = "<td class='false_td'><i class='fa fa-times' aria-hidden='true'></i></td>";
 
         /* Check validation and set HTML parts accordingly. */
-        if ($php_version_ok === true && $sessions_ok === true && $write_json_ts === true)
+        if ($php_version_ok === true && $sessions_ok === true && $write === true)
         {
             /* Set check mark symbols for all table rows if validation is passed. */
             $php_symbol   = $checkmark_html;
@@ -184,7 +187,7 @@ class installer_class
             /* If validation did not pass, evaluate check mark or 'x' for each row. */
             $php_symbol   = $php_version_ok === true ? $checkmark_html : $x_html;
             $sess_symbol  = $sessions_ok    === true ? $checkmark_html : $x_html;
-            $write_symbol = $write_json_ts  === true ? $checkmark_html : $x_html;
+            $write_symbol = $write_key  === true ? $checkmark_html : $x_html;
 
             /* Set open div element with 'bad' class */
             $div_start = '<div class=\'rigby_message bad\'>';
@@ -200,7 +203,7 @@ class installer_class
             {
                 $end_info .= '<li>Rigby needs sessions to be enabled.</li>';
             }
-            if ($write_json_ts === false)
+            if ($write_key === false)
             {
                 $end_info .= '<li>Rigby couldn\'t write to it\'s own directory.</li>';
             }
@@ -546,7 +549,22 @@ class installer_class
     }
 
     /**
-     * Here we're just testing to see if it's possible to write to json_time_stamp.
+     * This method both tests whether a write is possible, but also sets a secret key.
+     *
+     * @return bool
+     */
+    protected function try_to_write_secret_key()
+    {
+        $random_key = bin2hex(password_hash(32, MCRYPT_DEV_URANDOM));
+
+        $secret_key_text = "<?php
+        define(\"SECRET_KEY\", \"$random_key\");";
+
+        return $this->try_to_write('../review_login/define.php', $secret_key_text);
+    }
+
+    /**
+     * Clears the file holding JSON timestamp array.
      *
      * @return bool
      */
