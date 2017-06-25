@@ -35,7 +35,6 @@ class sidebar extends abstract_navigate
 
         $this->review_array = $this->get_reviews($this->product_id, $this->rating, $this->sql_start, $this->results_per_page);
 
-//        echo '<pre>Review Data<br>' . print_r($this->review_array) . '</pre>';
         $this->sidebar      = $this->build_sidebar($this->review_array);
     }
 
@@ -49,19 +48,15 @@ class sidebar extends abstract_navigate
             $query .= ' WHERE';
         }
 
-        $query .= $this->trait_append_query_data($rating, ' stars = ? ', $pdo);
+        $query .= $this->append_query_data($rating, ' stars = ? ', $pdo);
         $query .= ($rating && $prod_id) ? ' AND' : '';
-        $query .= $this->trait_append_query_data($prod_id, ' product = ?', $pdo);
+        $query .= $this->append_query_data($prod_id, ' product = ?', $pdo);
 
         $query .= ' ORDER BY date desc';
         $query .= ' LIMIT ?, ?';
         $pdo[] = $start;
         $pdo[] = $reviews_per_page;
 
-/*
-        echo "Query: $query<br>" . '<br>';
-        echo '<pre>' . print_r($pdo) . '</pre>';
-*/
         try {
             $results = sql_pdo::run($query, $pdo)->fetchAll();
             return $results;
