@@ -1,6 +1,13 @@
 <?php
 
+/**
+ * @package     Rigby
+ * @author      Gabriel Mioni <gabriel@gabrielmioni.com>
+ */
 
+/**
+ * Used in trait_visitor_navigate.php
+ */
 trait trait_append_query_data
 {
     /**
